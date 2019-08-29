@@ -17,13 +17,10 @@ as required by the copyright holders of these functions, and desired by the deve
 #define PLUGIN_DATE   20180528			// Plugin Date
 #define PLUGIN_VERS   12.4				// Plugin Version
 
-#ifndef PLUGIN_API
-#include "../MQ2Plugin.h"
+#include "../../MQ2Plugin.h"
 PreSetup(PLUGIN_NAME);
 PLUGIN_VERSION(PLUGIN_VERS);
-#endif PLUGIN_API
 
-#include "../MQ2Plugin.h"
 #include "math.h"
 #include <vector>
 
@@ -377,17 +374,13 @@ class CMUCharacter
 public:
     bool IsBard()
     {
-        PCHARINFO2 pChar = GetCharInfo2();
-        if (GetCharInfo()->pSpawn->mActorClient.Class == Bard)
-        {
-            return true;
-        }
-        return false;
+		auto pChar = GetCharInfo();
+		return pChar && pChar->pSpawn && pChar->pSpawn->mActorClient.Class == Bard;
     };
 
     bool InCombat()
     {
-        if (ValidIngame() && ((PCPLAYERWND)pPlayerWnd)->CombatState == 0 && ((CXWnd*)pPlayerWnd)->GetChildItem("PW_CombatStateAnim"))
+        if (ValidIngame() && pPlayerWnd->CombatState == 0 && pPlayerWnd->GetChildItem("PW_CombatStateAnim"))
         {
             return true;
         }
@@ -397,7 +390,7 @@ public:
     bool IsMe(PSPAWNINFO pCheck)
     {
         if (!pCheck || !pLocalPlayer) return false;
-        if (pCheck->SpawnID == ((PSPAWNINFO)pCharSpawn)->SpawnID || pCheck->SpawnID == ((PSPAWNINFO)pLocalPlayer)->SpawnID)
+        if (pCheck->SpawnID == pCharSpawn->SpawnID || pCheck->SpawnID == pLocalPlayer->SpawnID)
         {
             return true;
         }
@@ -2075,24 +2068,19 @@ void CMUActive::AggroTLO()
 class CMoveUtilsWnd : public CCustomWnd
 {
 public:
-    CStmlWnd*         StmlOut;
-    CXWnd*            OutWnd;
-    struct _CSIDLWND* OutStruct;
+	CStmlWnd* OutWnd;
 
-    CMoveUtilsWnd(CXStr& Template) : CCustomWnd(Template)
+    CMoveUtilsWnd(const CXStr& Template) : CCustomWnd(Template)
     {
-        SetWndNotification(CMoveUtilsWnd);
-        StmlOut                                     = (CStmlWnd*)GetChildItem("CW_ChatOutput");
-        OutWnd                                      = (CXWnd*)StmlOut;
+		OutWnd = (CStmlWnd*)GetChildItem("CW_ChatOutput");
         OutWnd->SetClickable(1);
-        OutStruct                                   = (_CSIDLWND*)GetChildItem("CW_ChatOutput");
 		SetEscapable(0);
-		StmlOut->MaxLines                           = 0x190;
+		OutWnd->MaxLines = 0x190;
 		AddStyle(CWS_TITLE | CWS_MINIMIZE | CWS_RESIZEBORDER);
 		RemoveStyle(CWS_TRANSPARENT | CWS_CLOSE);
     };
 
-    int WndNotification(CXWnd* pWnd, unsigned int uiMessage, void* pData)
+    virtual int WndNotification(CXWnd* pWnd, unsigned int uiMessage, void* pData) override
     {
         if (pWnd == NULL && uiMessage == XWM_CLOSE)
         {
@@ -2100,7 +2088,17 @@ public:
             return 0;
         }
         return CSidlScreenWnd::WndNotification(pWnd, uiMessage, pData);
-    };
+    }
+
+	void Clear()
+	{
+		if (OutWnd)
+		{
+			OutWnd->SetSTMLText("");
+			OutWnd->ForceParseNow();
+			OutWnd->SetVScrollPos(OutWnd->GetVScrollMax());
+		}
+	}
 };
 
 class CMUWndHandler
@@ -2129,19 +2127,19 @@ public:
     void Clear()
     {
         if (!OurWnd) return;
-        ((CChatWindow*)OurWnd)->Clear();
+        OurWnd->Clear();
     };
 
     void Hover()
     {
         if (!OurWnd) return;
-        ((CXWnd*)OurWnd)->DoAllDrawing();
+        OurWnd->DoAllDrawing();
     };
 
     void Min()
     {
         if (!OurWnd) return;
-        ((CXWnd*)OurWnd)->OnMinimizeBox();
+        OurWnd->OnMinimizeBox();
     };
 
     void Save()
@@ -2195,77 +2193,63 @@ protected:
 
         NewFont(GetPrivateProfileInt(SET->SaveByChar ? szCharName : "Window", "FontSize", 2, INIFileName));
         GetPrivateProfileString(SET->SaveByChar ? szCharName : "Window", "WindowTitle", "MoveUtils", szWindowText, MAX_STRING, INIFileName);
-        OurWnd->CSetWindowText(szWindowText);
+        OurWnd->SetWindowText(szWindowText);
         //SetCXStr(&OurWnd->WindowText, szWindowText);
-        ((CXWnd*)OurWnd)->Show(1, 1);
-        OurWnd->OutStruct->RemoveStyle(CWS_CLOSE);
+        OurWnd->Show(1, 1);
+        OurWnd->OutWnd->RemoveStyle(CWS_CLOSE);
         //BitOff(OurWnd->OutStruct->WindowStyle, CWS_CLOSE);
     };
 
     void SaveWnd()
     {
-        PCSIDLWND UseWnd = (PCSIDLWND)OurWnd;
         char szTemp[MAX_STRING]                = {0};
 
-        WritePrivateProfileString(SET->SaveByChar ? szCharName : "Window", "ChatTop",      SafeItoa(UseWnd->GetLocation().top,    szTemp, 10), INIFileName);
-        WritePrivateProfileString(SET->SaveByChar ? szCharName : "Window", "ChatBottom",   SafeItoa(UseWnd->GetLocation().bottom, szTemp, 10), INIFileName);
-        WritePrivateProfileString(SET->SaveByChar ? szCharName : "Window", "ChatLeft",     SafeItoa(UseWnd->GetLocation().left,   szTemp, 10), INIFileName);
-        WritePrivateProfileString(SET->SaveByChar ? szCharName : "Window", "ChatRight",    SafeItoa(UseWnd->GetLocation().right,  szTemp, 10), INIFileName);
-        WritePrivateProfileString(SET->SaveByChar ? szCharName : "Window", "Fades",        SafeItoa(UseWnd->GetFades(),           szTemp, 10), INIFileName);
-        WritePrivateProfileString(SET->SaveByChar ? szCharName : "Window", "Alpha",        SafeItoa(UseWnd->GetAlpha(),           szTemp, 10), INIFileName);
-        WritePrivateProfileString(SET->SaveByChar ? szCharName : "Window", "FadeToAlpha",  SafeItoa(UseWnd->GetFadeToAlpha(),     szTemp, 10), INIFileName);
-        WritePrivateProfileString(SET->SaveByChar ? szCharName : "Window", "Duration",     SafeItoa(UseWnd->GetFadeDuration(),    szTemp, 10), INIFileName);
-        WritePrivateProfileString(SET->SaveByChar ? szCharName : "Window", "Locked",       SafeItoa(UseWnd->IsLocked(),          szTemp, 10), INIFileName);
-        WritePrivateProfileString(SET->SaveByChar ? szCharName : "Window", "Delay",        SafeItoa(UseWnd->GetFadeDelay(),   szTemp, 10), INIFileName);
-        WritePrivateProfileString(SET->SaveByChar ? szCharName : "Window", "BGType",       SafeItoa(UseWnd->GetBGType(),          szTemp, 10), INIFileName);
+        WritePrivateProfileString(SET->SaveByChar ? szCharName : "Window", "ChatTop",      SafeItoa(OurWnd->GetLocation().top,    szTemp, 10), INIFileName);
+        WritePrivateProfileString(SET->SaveByChar ? szCharName : "Window", "ChatBottom",   SafeItoa(OurWnd->GetLocation().bottom, szTemp, 10), INIFileName);
+        WritePrivateProfileString(SET->SaveByChar ? szCharName : "Window", "ChatLeft",     SafeItoa(OurWnd->GetLocation().left,   szTemp, 10), INIFileName);
+        WritePrivateProfileString(SET->SaveByChar ? szCharName : "Window", "ChatRight",    SafeItoa(OurWnd->GetLocation().right,  szTemp, 10), INIFileName);
+        WritePrivateProfileString(SET->SaveByChar ? szCharName : "Window", "Fades",        SafeItoa(OurWnd->GetFades(),           szTemp, 10), INIFileName);
+        WritePrivateProfileString(SET->SaveByChar ? szCharName : "Window", "Alpha",        SafeItoa(OurWnd->GetAlpha(),           szTemp, 10), INIFileName);
+        WritePrivateProfileString(SET->SaveByChar ? szCharName : "Window", "FadeToAlpha",  SafeItoa(OurWnd->GetFadeToAlpha(),     szTemp, 10), INIFileName);
+        WritePrivateProfileString(SET->SaveByChar ? szCharName : "Window", "Duration",     SafeItoa(OurWnd->GetFadeDuration(),    szTemp, 10), INIFileName);
+        WritePrivateProfileString(SET->SaveByChar ? szCharName : "Window", "Locked",       SafeItoa(OurWnd->IsLocked(),           szTemp, 10), INIFileName);
+        WritePrivateProfileString(SET->SaveByChar ? szCharName : "Window", "Delay",        SafeItoa(OurWnd->GetFadeDelay(),       szTemp, 10), INIFileName);
+        WritePrivateProfileString(SET->SaveByChar ? szCharName : "Window", "BGType",       SafeItoa(OurWnd->GetBGType(),          szTemp, 10), INIFileName);
 		ARGBCOLOR col = { 0 };
-		col.ARGB = UseWnd->GetBGColor();
-		WritePrivateProfileString(SET->SaveByChar ? szCharName : "Window", "BGTint.alpha",   SafeItoa(col.A,       szTemp, 10), INIFileName);
-		WritePrivateProfileString(SET->SaveByChar ? szCharName : "Window", "BGTint.red",   SafeItoa(col.R,       szTemp, 10), INIFileName);
-        WritePrivateProfileString(SET->SaveByChar ? szCharName : "Window", "BGTint.green", SafeItoa(col.G,       szTemp, 10), INIFileName);
-        WritePrivateProfileString(SET->SaveByChar ? szCharName : "Window", "BGTint.blue",  SafeItoa(col.B,       szTemp, 10), INIFileName);
-        WritePrivateProfileString(SET->SaveByChar ? szCharName : "Window", "FontSize",     SafeItoa(FontSize,                szTemp, 10), INIFileName);
+		col.ARGB = OurWnd->GetBGColor();
+		WritePrivateProfileString(SET->SaveByChar ? szCharName : "Window", "BGTint.alpha", SafeItoa(col.A,    szTemp, 10), INIFileName);
+		WritePrivateProfileString(SET->SaveByChar ? szCharName : "Window", "BGTint.red",   SafeItoa(col.R,    szTemp, 10), INIFileName);
+        WritePrivateProfileString(SET->SaveByChar ? szCharName : "Window", "BGTint.green", SafeItoa(col.G,    szTemp, 10), INIFileName);
+        WritePrivateProfileString(SET->SaveByChar ? szCharName : "Window", "BGTint.blue",  SafeItoa(col.B,    szTemp, 10), INIFileName);
+        WritePrivateProfileString(SET->SaveByChar ? szCharName : "Window", "FontSize",     SafeItoa(FontSize, szTemp, 10), INIFileName);
 
-        GetCXStr(UseWnd->CGetWindowText(), szTemp);
-        WritePrivateProfileString(SET->SaveByChar ? szCharName : "Window", "WindowTitle", szTemp, INIFileName);
+        WritePrivateProfileString(SET->SaveByChar ? szCharName : "Window", "WindowTitle", OurWnd->GetWindowText().c_str(), INIFileName);
     };
 
     void Output(char* szText)
     {
-        ((CXWnd*)OurWnd)->Show(1, 1);
+        OurWnd->Show(1, 1);
         char szProcessed[MAX_STRING] = {0};
         StripMQChat(szText, szProcessed);
         CheckChatForEvent(szProcessed);
         MQToSTML(szText, szProcessed, MAX_STRING);
         strcat_s(szProcessed, "<br>");
-        CXStr NewText(szProcessed);
-        (OurWnd->StmlOut)->AppendSTML(NewText);
-        (OurWnd->OutWnd)->SetVScrollPos(OurWnd->OutStruct->GetVScrollMax());
+        OurWnd->OutWnd->AppendSTML(szProcessed);
+        OurWnd->OutWnd->SetVScrollPos(OurWnd->OutWnd->GetVScrollMax());
     };
 
-    void SetFontSize(unsigned int uiSize)
+    void SetFontSize(int uiSize)
     {
-        struct FONTDATA
-        {
-            unsigned long ulNumFonts;
-            char**        ppFonts;
-        };
-        FONTDATA*      pFonts;       // font array structure
-        unsigned long* pulSelFont;   // selected font
-        pFonts = (FONTDATA*)&(((char*)pWndMgr)[EQ_CHAT_FONT_OFFSET]);
-        if (!pFonts->ppFonts || uiSize >= (int)pFonts->ulNumFonts)
-        {
-            return;
-        }
-        pulSelFont = (unsigned long*)pFonts->ppFonts[uiSize];
+		if (uiSize < 0 || uiSize > pWndMgr->FontsArray.GetCount())
+			return;
 
-        CXStr ContStr(((CStmlWnd*)OurWnd->StmlOut)->GetSTMLText());
-        ((CXWnd*)OurWnd->StmlOut)->SetFont(pulSelFont);
-        ((CStmlWnd*)OurWnd->StmlOut)->SetSTMLText(ContStr, 1, 0);
-        ((CStmlWnd*)OurWnd->StmlOut)->ForceParseNow();
-        ((CXWnd*)OurWnd->StmlOut)->SetVScrollPos(OurWnd->StmlOut->GetVScrollMax());
+		CXStr ContStr(OurWnd->OutWnd->GetSTMLText());
+		OurWnd->OutWnd->SetFont(pWndMgr->FontsArray[uiSize]);
+		OurWnd->OutWnd->SetSTMLText(ContStr, 1, 0);
+		OurWnd->OutWnd->ForceParseNow();
+		OurWnd->OutWnd->SetVScrollPos(OurWnd->OutWnd->GetVScrollMax());
 
-        FontSize = uiSize;
+		FontSize = uiSize;
     };
 
     CMoveUtilsWnd* OurWnd;
@@ -2336,7 +2320,7 @@ public:
 
     bool GetMember(MQ2VARPTR VarPtr, char* Member, char* Index, MQ2TYPEVAR &Dest)
     {
-        PMQ2TYPEMEMBER pMember = MQ2MakeCampType::FindMember(Member);
+        auto pMember = MQ2MakeCampType::FindMember(Member);
         if (!pMember || !ValidIngame(false)) return false;
         switch((MakeCampMembers)pMember->ID)
         {
@@ -2523,7 +2507,7 @@ public:
 
     bool GetMember(MQ2VARPTR VarPtr, char* Member, char* Index, MQ2TYPEVAR &Dest)
     {
-        PMQ2TYPEMEMBER pMember = MQ2StickType::FindMember(Member);
+        auto pMember = MQ2StickType::FindMember(Member);
         if (!pMember || !ValidIngame(false)) return false;
         switch((StickMembers)pMember->ID)
         {
@@ -2569,7 +2553,7 @@ public:
             if (PSPAWNINFO psTarget = (PSPAWNINFO)(STICK->Hold ? GetSpawnByID(STICK->HoldID) : pTarget))
             {
                 PSPAWNINFO pChSpawn = (PSPAWNINFO)pCharSpawn;
-                Dest.DWord = (fabs(GetDistance(pChSpawn, psTarget)) <= ((STICK->Dist > 0.0f ? STICK->Dist : (psTarget->StandState ? get_melee_range(pLocalPlayer, (EQPlayer *)psTarget) : 15.0f)) * STICK->DistModP + STICK->DistMod) && fabs(MOVE->AngDist(psTarget->Heading, pChSpawn->Heading)) <= STICK->ArcBehind) ? true : false;
+                Dest.DWord = (fabs(GetDistance(pChSpawn, psTarget)) <= ((STICK->Dist > 0.0f ? STICK->Dist : (psTarget->StandState ? get_melee_range(pLocalPlayer, (PlayerClient*)psTarget) : 15.0f)) * STICK->DistModP + STICK->DistMod) && fabs(MOVE->AngDist(psTarget->Heading, pChSpawn->Heading)) <= STICK->ArcBehind) ? true : false;
             }
             Dest.Type = pBoolType;
             return true;
@@ -2683,7 +2667,7 @@ public:
 
     bool GetMember(MQ2VARPTR VarPtr, char* Member, char* Index, MQ2TYPEVAR &Dest)
     {
-        PMQ2TYPEMEMBER pMember = MQ2MoveToType::FindMember(Member);
+        auto pMember = MQ2MoveToType::FindMember(Member);
         if (!pMember || !ValidIngame(false)) return false;
         switch((MoveToMembers)pMember->ID)
         {
@@ -2794,7 +2778,7 @@ public:
 
     bool GetMember(MQ2VARPTR VarPtr, char* Member, char* Index, MQ2TYPEVAR &Dest)
     {
-        PMQ2TYPEMEMBER pMember = MQ2CircleType::FindMember(Member);
+        auto pMember = MQ2CircleType::FindMember(Member);
         if (!pMember || !ValidIngame(false)) return false;
         switch((CircleMembers)pMember->ID)
         {
@@ -2935,7 +2919,7 @@ public:
 
     bool GetMember(MQ2VARPTR VarPtr, char* Member, char* Index, MQ2TYPEVAR &Dest)
     {
-        PMQ2TYPEMEMBER pMember = MQ2MoveUtilsType::FindMember(Member);
+        auto pMember = MQ2MoveUtilsType::FindMember(Member);
         if (!pMember || !ValidIngame(false)) return false;
         switch((MoveUtilsMembers)pMember->ID)
         {
@@ -4711,7 +4695,7 @@ void CalcOurAngle(PSPAWNINFO pLPlayer, char* szLine)
     float fAngle   = MOVE->AngDist(psTarget->Heading, pChSpawn->Heading);
     float fReqHead = MOVE->SaneHead(atan2(psTarget->X - pChSpawn->X, psTarget->Y - pChSpawn->Y) * HEADING_HALF / (float)PI);
     fReqHead = pChSpawn->Heading - fReqHead;
-    float fMeleeRng = get_melee_range(pLocalPlayer, (EQPlayer *)psTarget);
+    float fMeleeRng = get_melee_range(pLocalPlayer, (PlayerClient*)psTarget);
     float fStickRng = fMeleeRng * STICK->DistModP + STICK->DistMod;
     float fSaneH = MOVE->SaneHead(fReqHead);
     float fDist   = GetDistance(pChSpawn, psTarget);
@@ -5718,7 +5702,7 @@ void MainProcess(unsigned char ucCmdUsed)
     {
         if (!STICK->SetDist)
         {
-            STICK->Dist    = (psTarget->StandState ? get_melee_range(pLocalPlayer, (EQPlayer *)psTarget) : 15.0f) * STICK->DistModP + STICK->DistMod;
+            STICK->Dist    = (psTarget->StandState ? get_melee_range(pLocalPlayer, (PlayerClient*)psTarget) : 15.0f) * STICK->DistModP + STICK->DistMod;
             STICK->SetDist = true;
         }
 
@@ -7877,37 +7861,37 @@ void KeybindPressed(int iKeyPressed, int iKeyDown)
     }
 }
 
-void FwdWrapper(char* szName, int iKeyDown)
+void FwdWrapper(const char* szName, bool iKeyDown)
 {
     KeybindPressed(iForward, iKeyDown);
 }
 
-void BckWrapper(char* szName, int iKeyDown)
+void BckWrapper(const char* szName, bool iKeyDown)
 {
     KeybindPressed(iBackward, iKeyDown);
 }
 
-void LftWrapper(char* szName, int iKeyDown)
+void LftWrapper(const char* szName, bool iKeyDown)
 {
     KeybindPressed(iTurnLeft, iKeyDown);
 }
 
-void RgtWrapper(char* szName, int iKeyDown)
+void RgtWrapper(const char* szName, bool iKeyDown)
 {
     KeybindPressed(iTurnRight, iKeyDown);
 }
 
-void StrafeLftWrapper(char* szName, int iKeyDown)
+void StrafeLftWrapper(const char* szName, bool iKeyDown)
 {
     KeybindPressed(iStrafeLeft, iKeyDown);
 }
 
-void StrafeRgtWrapper(char* szName, int iKeyDown)
+void StrafeRgtWrapper(const char* szName, bool iKeyDown)
 {
     KeybindPressed(iStrafeRight, iKeyDown);
 }
 
-void AutoRunWrapper(char* szName, int iKeyDown)
+void AutoRunWrapper(const char* szName, bool iKeyDown)
 {
     KeybindPressed(iAutoRun, iKeyDown);
 }
@@ -8046,17 +8030,6 @@ inline unsigned char FindPointers()
 }
 */
 
-PMQPLUGIN FindPlugin(char* PluginName)
-{
-    unsigned int uiLength = strlen(PluginName) + 1;
-    PMQPLUGIN pLook = pPlugins;
-    while (pLook && _strnicmp(PluginName, pLook->szFilename, uiLength))
-    {
-        pLook = pLook->pNext;
-    }
-    return pLook;
-}
-
 // ---------------------------------------------------------------------------
 // MQ2 Exported functions
 unsigned int __stdcall MQ2DataVariableLookup(char * VarName, char * Value,size_t ValueLen)
@@ -8128,12 +8101,8 @@ PLUGIN_API void InitializePlugin()
     pMoveUtilsType = new MQ2MoveUtilsType;
 
     // setup mq2melee pointers
-    pbMULoaded = NULL;
-    if (PMQPLUGIN pLook = FindPlugin("mq2melee"))
-    {
-        pbMULoaded = (bool *)GetProcAddress(pLook->hModule, "bMULoaded");
-        if (pbMULoaded) *pbMULoaded = true;
-    }
+	if (pbMULoaded = (bool*)GetPluginProc("MQ2Melee", "bMULoaded"))
+		*pbMULoaded = true;
 }
 
 PLUGIN_API void ShutdownPlugin()
@@ -8168,12 +8137,8 @@ PLUGIN_API void ShutdownPlugin()
 		pMoveEvent = 0;
 	}
     // destroy mq2 melee linkage
-    pbMULoaded = NULL;
-    if (PMQPLUGIN pLook = FindPlugin("mq2melee"))
-    {
-        pbMULoaded = (bool *)GetProcAddress(pLook->hModule, "bMULoaded");
-        if (pbMULoaded) *pbMULoaded = false;
-    }
+	if (pbMULoaded = (bool*)GetPluginProc("MQ2Melee", "bMULoaded"))
+		*pbMULoaded = false;
 
     // destroy UI window
     WINDOW->Destroy(ValidIngame());
