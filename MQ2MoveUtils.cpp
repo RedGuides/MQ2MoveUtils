@@ -2318,7 +2318,7 @@ public:
         TypeMember(ScatSize);
     }
 
-    bool GetMember(MQ2VARPTR VarPtr, char* Member, char* Index, MQ2TYPEVAR &Dest)
+    bool GetMember(MQVarPtr VarPtr, char* Member, char* Index, MQTypeVar &Dest)
     {
         auto pMember = MQ2MakeCampType::FindMember(Member);
         if (!pMember || !ValidIngame(false)) return false;
@@ -2431,7 +2431,7 @@ public:
         return false;
     }
 
-    bool ToString(MQ2VARPTR VarPtr, char* Destination)
+    bool ToString(MQVarPtr VarPtr, char* Destination)
     {
 		strcpy_s(Destination, MAX_STRING, "OFF");
         if (PAUSE->PausedMU || PAUSE->PausedCmd)
@@ -2445,17 +2445,17 @@ public:
         return true;
     }
 
-    bool FromData(MQ2VARPTR &VarPtr, MQ2TYPEVAR &Source)
+    bool FromData(MQVarPtr &VarPtr, MQTypeVar &Source)
     {
         return false;
     }
-    bool FromString(MQ2VARPTR &VarPtr, char* Source)
+    bool FromString(MQVarPtr &VarPtr, char* Source)
     {
         return false;
     }
 };
 
-int dataMakeCamp(char* szName, MQ2TYPEVAR &Ret)
+bool dataMakeCamp(const char* szName, MQTypeVar &Ret)
 {
     Ret.DWord = 1;
     Ret.Type  = pMakeCampType;
@@ -2505,7 +2505,7 @@ public:
         TypeMember(Broken);
     }
 
-    bool GetMember(MQ2VARPTR VarPtr, char* Member, char* Index, MQ2TYPEVAR &Dest)
+    bool GetMember(MQVarPtr VarPtr, char* Member, char* Index, MQTypeVar &Dest)
     {
         auto pMember = MQ2StickType::FindMember(Member);
         if (!pMember || !ValidIngame(false)) return false;
@@ -2606,7 +2606,7 @@ public:
         return false;
     }
 
-    bool ToString(MQ2VARPTR VarPtr, char* Destination)
+    bool ToString(MQVarPtr VarPtr, char* Destination)
     {
 		strcpy_s(Destination, MAX_STRING, "OFF");
         if (PAUSE->PausedMU || PAUSE->PausedCmd)
@@ -2621,17 +2621,17 @@ public:
         return true;
     }
 
-    bool FromData(MQ2VARPTR &VarPtr, MQ2TYPEVAR &Source)
+    bool FromData(MQVarPtr &VarPtr, MQTypeVar &Source)
     {
         return false;
     }
-    bool FromString(MQ2VARPTR &VarPtr, char* Source)
+    bool FromString(MQVarPtr &VarPtr, char* Source)
     {
         return false;
     }
 };
 
-int dataStick(char* szName, MQ2TYPEVAR &Ret)
+bool dataStick(const char* szName, MQTypeVar &Ret)
 {
     Ret.DWord = 1;
     Ret.Type  = pStickType;
@@ -2665,7 +2665,7 @@ public:
         TypeMember(Broken);
     }
 
-    bool GetMember(MQ2VARPTR VarPtr, char* Member, char* Index, MQ2TYPEVAR &Dest)
+    bool GetMember(MQVarPtr VarPtr, char* Member, char* Index, MQTypeVar &Dest)
     {
         auto pMember = MQ2MoveToType::FindMember(Member);
         if (!pMember || !ValidIngame(false)) return false;
@@ -2715,7 +2715,7 @@ public:
         return false;
     }
 
-    bool ToString(MQ2VARPTR VarPtr, char* Destination)
+    bool ToString(MQVarPtr VarPtr, char* Destination)
     {
 		strcpy_s(Destination, MAX_STRING, "OFF");
         if (PAUSE->PausedMU || PAUSE->PausedCmd)
@@ -2730,17 +2730,17 @@ public:
         return true;
     }
 
-    bool FromData(MQ2VARPTR &VarPtr, MQ2TYPEVAR &Source)
+    bool FromData(MQVarPtr &VarPtr, MQTypeVar &Source)
     {
         return false;
     }
-    bool FromString(MQ2VARPTR &VarPtr, char* Source)
+    bool FromString(MQVarPtr &VarPtr, char* Source)
     {
         return false;
     }
 };
 
-int dataMoveTo(char* szName, MQ2TYPEVAR &Ret)
+bool dataMoveTo(const char* szName, MQTypeVar &Ret)
 {
     Ret.DWord = 1;
     Ret.Type  = pMoveToType;
@@ -2776,7 +2776,7 @@ public:
         TypeMember(Radius);
     }
 
-    bool GetMember(MQ2VARPTR VarPtr, char* Member, char* Index, MQ2TYPEVAR &Dest)
+    bool GetMember(MQVarPtr VarPtr, char* Member, char* Index, MQTypeVar &Dest)
     {
         auto pMember = MQ2CircleType::FindMember(Member);
         if (!pMember || !ValidIngame(false)) return false;
@@ -2841,7 +2841,7 @@ public:
         return false;
     }
 
-    bool ToString(MQ2VARPTR VarPtr, char* Destination)
+    bool ToString(MQVarPtr VarPtr, char* Destination)
     {
 		strcpy_s(Destination, MAX_STRING, "OFF");
         if (PAUSE->PausedMU || PAUSE->PausedCmd)
@@ -2855,17 +2855,17 @@ public:
         return true;
     }
 
-    bool FromData(MQ2VARPTR &VarPtr, MQ2TYPEVAR &Source)
+    bool FromData(MQVarPtr &VarPtr, MQTypeVar &Source)
     {
         return false;
     }
-    bool FromString(MQ2VARPTR &VarPtr, char* Source)
+    bool FromString(MQVarPtr &VarPtr, char* Source)
     {
         return false;
     }
 };
 
-int dataCircling(char* szName, MQ2TYPEVAR &Ret)
+bool dataCircling(const char* szName, MQTypeVar &Ret)
 {
     Ret.DWord = 1;
     Ret.Type  = pCircleType;
@@ -2917,7 +2917,7 @@ public:
         TypeMember(GM);
     }
 
-    bool GetMember(MQ2VARPTR VarPtr, char* Member, char* Index, MQ2TYPEVAR &Dest)
+    bool GetMember(MQVarPtr VarPtr, char* Member, char* Index, MQTypeVar &Dest)
     {
         auto pMember = MQ2MoveUtilsType::FindMember(Member);
         if (!pMember || !ValidIngame(false)) return false;
@@ -3017,7 +3017,7 @@ public:
         return false;
     }
 
-    bool ToString(MQ2VARPTR VarPtr, char* Destination)
+    bool ToString(MQVarPtr VarPtr, char* Destination)
     {
 		strcpy_s(Destination, MAX_STRING, "NONE");
         if (STICK->On)
@@ -3039,17 +3039,17 @@ public:
         return true;
     }
 
-    bool FromData(MQ2VARPTR &VarPtr, MQ2TYPEVAR &Source)
+    bool FromData(MQVarPtr &VarPtr, MQTypeVar &Source)
     {
         return false;
     }
-    bool FromString(MQ2VARPTR &VarPtr, char* Source)
+    bool FromString(MQVarPtr &VarPtr, char* Source)
     {
         return false;
     }
 };
 
-int dataMoveUtils(char* szName, MQ2TYPEVAR &Ret)
+bool dataMoveUtils(const char* szName, MQTypeVar &Ret)
 {
     Ret.DWord = 1;
     Ret.Type  = pMoveUtilsType;
@@ -3089,7 +3089,7 @@ void __stdcall CheckGates_Event(unsigned int ID, void *pData, PBLECHVALUE pValue
     PSPAWNINFO psTarget = (PSPAWNINFO)((STICK->Hold && STICK->HoldID) ? GetSpawnByID(STICK->HoldID) : pTarget);
     if (psTarget && pValues)
     {
-        if (!strcmp(pValues->Value, psTarget->DisplayedName))
+        if (pValues->Value == psTarget->DisplayedName)
         {
             EndPreviousCmd(true);
             sprintf_s(szMsg, "\ay%s\aw:: Mob gating ended previous command.", PLUGIN_NAME);
