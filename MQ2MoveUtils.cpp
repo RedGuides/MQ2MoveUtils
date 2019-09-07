@@ -17,7 +17,7 @@ as required by the copyright holders of these functions, and desired by the deve
 #define PLUGIN_DATE   20180528			// Plugin Date
 #define PLUGIN_VERS   12.4				// Plugin Version
 
-#include "../../MQ2Plugin.h"
+#include <MQ2Plugin.h>
 PreSetup(PLUGIN_NAME);
 PLUGIN_VERSION(PLUGIN_VERS);
 
