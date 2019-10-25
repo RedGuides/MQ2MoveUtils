@@ -1556,8 +1556,8 @@ public:
         }
         if (bWalkOn != bWalking)
         {
-            MQ2Globals::ExecuteCmd(iRunWalk, 1, 0);
-            MQ2Globals::ExecuteCmd(iRunWalk, 0, 0);
+            ExecuteCmd(iRunWalk, 1, 0);
+            ExecuteCmd(iRunWalk, 0, 0);
         }
     };
 
@@ -1583,8 +1583,8 @@ public:
             EzCommand("/stand");
             break;
         case STANDSTATE_DUCK:
-            /*MQ2Globals::ExecuteCmd(iDuckKey, 1, 0);
-            MQ2Globals::ExecuteCmd(iDuckKey, 0, 0);*/ // rare server desync can happen from doing it this way
+            /*ExecuteCmd(iDuckKey, 1, 0);
+            ExecuteCmd(iDuckKey, 0, 0);*/ // rare server desync can happen from doing it this way
             EzCommand("/stand");
             break;
         case STANDSTATE_STAND:
@@ -1873,23 +1873,23 @@ private:
         {
         case GO_FORWARD:
             pMU->CmdFwd = true;
-            MQ2Globals::ExecuteCmd(iBackward, 0, 0);
-            MQ2Globals::ExecuteCmd(iForward,  1, 0);
+            ExecuteCmd(iBackward, 0, 0);
+            ExecuteCmd(iForward,  1, 0);
             break;
         case GO_BACKWARD:
             pMU->CmdFwd = false;
-            MQ2Globals::ExecuteCmd(iForward,  0, 0);
-            MQ2Globals::ExecuteCmd(iBackward, 1, 0);
+            ExecuteCmd(iForward,  0, 0);
+            ExecuteCmd(iBackward, 1, 0);
             break;
         case GO_LEFT:
             pMU->CmdStrafe = true;
-            MQ2Globals::ExecuteCmd(iStrafeRight, 0, 0);
-            MQ2Globals::ExecuteCmd(iStrafeLeft,  1, 0);
+            ExecuteCmd(iStrafeRight, 0, 0);
+            ExecuteCmd(iStrafeLeft,  1, 0);
             break;
         case GO_RIGHT:
             pMU->CmdStrafe = true;
-            MQ2Globals::ExecuteCmd(iStrafeLeft,  0, 0);
-            MQ2Globals::ExecuteCmd(iStrafeRight, 1, 0);
+            ExecuteCmd(iStrafeLeft,  0, 0);
+            ExecuteCmd(iStrafeRight, 1, 0);
             break;
         }
     };
@@ -1899,30 +1899,30 @@ private:
         switch (ucDirection)
         {
         case APPLY_TO_ALL:
-            MQ2Globals::ExecuteCmd(iForward,     0, 0);
-            MQ2Globals::ExecuteCmd(iBackward,    1, 0);
-            MQ2Globals::ExecuteCmd(iBackward,    0, 0);
-            MQ2Globals::ExecuteCmd(iStrafeLeft,  0, 0);
-            MQ2Globals::ExecuteCmd(iStrafeRight, 1, 0);
-            MQ2Globals::ExecuteCmd(iStrafeRight, 0, 0);
+            ExecuteCmd(iForward,     0, 0);
+            ExecuteCmd(iBackward,    1, 0);
+            ExecuteCmd(iBackward,    0, 0);
+            ExecuteCmd(iStrafeLeft,  0, 0);
+            ExecuteCmd(iStrafeRight, 1, 0);
+            ExecuteCmd(iStrafeRight, 0, 0);
             pMU->CmdFwd = pMU->CmdStrafe = false;
             break;
         case KILL_FB:
         case GO_FORWARD:
         case GO_BACKWARD:
-            MQ2Globals::ExecuteCmd(iForward,     1, 0);
-            MQ2Globals::ExecuteCmd(iForward,     0, 0);
-            MQ2Globals::ExecuteCmd(iBackward,    1, 0);
-            MQ2Globals::ExecuteCmd(iBackward,    0, 0);
+            ExecuteCmd(iForward,     1, 0);
+            ExecuteCmd(iForward,     0, 0);
+            ExecuteCmd(iBackward,    1, 0);
+            ExecuteCmd(iBackward,    0, 0);
             pMU->CmdFwd = false;
             break;
         case KILL_STRAFE:
         case GO_LEFT:
         case GO_RIGHT:
-            MQ2Globals::ExecuteCmd(iStrafeRight, 1, 0);
-            MQ2Globals::ExecuteCmd(iStrafeRight, 0, 0);
-            MQ2Globals::ExecuteCmd(iStrafeLeft,  1, 0);
-            MQ2Globals::ExecuteCmd(iStrafeLeft,  0, 0);
+            ExecuteCmd(iStrafeRight, 1, 0);
+            ExecuteCmd(iStrafeRight, 0, 0);
+            ExecuteCmd(iStrafeLeft,  1, 0);
+            ExecuteCmd(iStrafeLeft,  0, 0);
             pMU->CmdStrafe = false;
             break;
         }
@@ -5612,7 +5612,7 @@ void MainProcess(unsigned char ucCmdUsed)
     // end /makecamp player handling
 
     // handle null pointers for all commands
-    if (!pChData || !pLPlayer || !pChSpawn->SpawnID || !GetCharInfo2())
+    if (!pChData || !pLPlayer || !pChSpawn->SpawnID || !GetPcProfile())
     {
         sprintf_s(szMsg, "\ay%s\aw:: Null pointer, turning off current command", PLUGIN_NAME);
         WriteLine(szMsg, V_SILENCE);
@@ -6060,8 +6060,8 @@ void MainProcess(unsigned char ucCmdUsed)
                 // try to jump early (but not 1-2pulse misfires) and again after a few seconds/turns
                 if (STUCK->Jump && !sbJumping && !bLevitated && !bSwimming && ((STUCK->StuckInc % 5) == 0))
                 {
-                    MQ2Globals::ExecuteCmd(iJumpKey, 1, 0);
-                    MQ2Globals::ExecuteCmd(iJumpKey, 0, 0);
+                    ExecuteCmd(iJumpKey, 1, 0);
+                    ExecuteCmd(iJumpKey, 0, 0);
                     sbJumping = true;
                 }
 
