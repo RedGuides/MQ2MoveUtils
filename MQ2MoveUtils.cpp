@@ -13,16 +13,14 @@ as required by the copyright holders of these functions, and desired by the deve
 //Version 12.3 Moved patterns - SwiftyMUSE Apr 23 2018
 //Version 12.4 Fixed a NULL ptr crash - EqMule May 28 2018
 
-#define PLUGIN_NAME  "MQ2MoveUtils"		// Plugin Name
-#define PLUGIN_DATE   20180528			// Plugin Date
-#define PLUGIN_VERS   12.4				// Plugin Version
-
 #include <mq/Plugin.h>
-PreSetup(PLUGIN_NAME);
-PLUGIN_VERSION(PLUGIN_VERS);
 
-#include "math.h"
-#include <vector>
+#include <cmath>
+
+constexpr auto PLUGIN_NAME = "MQ2MoveUtils";
+PLUGIN_VERSION(12.4);
+
+PreSetup(PLUGIN_NAME);
 
 // uncomment these lines to enable debugspew spam
 //#define DEBUGMAIN
@@ -30,18 +28,6 @@ PLUGIN_VERSION(PLUGIN_VERS);
 //#define DEBUGSTUCK
 // debugspew for trivial messages
 //#define DEBUGMISC
-
-// uncomment this line if you use VC6
-//#define OLD_COMPILER_USER 1
-#if defined(_MSC_VER) && _MSC_VER <=1200
-#define OLD_COMPILER_USER 1
-#endif
-
-#ifdef OLD_COMPILER_USER
- #define A_TIME_TYPE  time_t
-#else
- #define A_TIME_TYPE  __time64_t
-#endif
 
 Blech *pMoveEvent = 0;
 // ------------------------------------------------------------------------------
@@ -3001,7 +2987,7 @@ public:
             Dest.Type  = pFloatType;
             return true;
         case Version:
-            sprintf_s(DataTypeTemp, "%1.4f", PLUGIN_VERS);
+            sprintf_s(DataTypeTemp, "%1.4f", MQ2Version);
             Dest.Ptr  = &DataTypeTemp[0];
             Dest.Type = pStringType;
             return true;
@@ -6550,7 +6536,7 @@ void OutputHelp(unsigned char ucCmdUsed, bool bOnlyCmdHelp)
     }
 
     char szTempOut[MAX_STRING] = {0};
-    sprintf_s(szTempOut, "\ay%s \agv%1.4f", PLUGIN_NAME, PLUGIN_VERS);
+    sprintf_s(szTempOut, "\ay%s \agv%1.4f", PLUGIN_NAME, MQ2Version);
     WriteLine(szTempOut, V_SILENCE);
 
     if (bDisplaySettings)
@@ -6731,7 +6717,7 @@ void DebugToWnd(unsigned char ucCmdUsed)
     char szDir[25]            = "\agNormal\ax";
     char szLongLine[48]       = "\ay---------------------------------------------";
 
-    sprintf_s(szTemp, "\ay%s v%1.4f - Current Status", PLUGIN_NAME, PLUGIN_VERS);
+    sprintf_s(szTemp, "\ay%s v%1.4f - Current Status", PLUGIN_NAME, MQ2Version);
     WriteLine(szTemp, V_SILENCE);
     if (ucCmdUsed == CMD_STICK || ucCmdUsed == APPLY_TO_ALL)
     {
@@ -6940,7 +6926,7 @@ void DebugToINI(unsigned char ucCmdUsed)
         break;
     }
 
-    sprintf_s(szTemp, "%s v%1.4f", PLUGIN_NAME, PLUGIN_VERS);
+    sprintf_s(szTemp, "%s v%1.4f", PLUGIN_NAME, MQ2Version);
     WritePrivateProfileString("Version",       "Number",                szTemp,                                     szDebugName);
     WritePrivateProfileString("Commands",      "CommandUsed",           szCommand,                                  szDebugName);
     WritePrivateProfileString("GenericBOOL",   "pMU->Keybinds",         pMU->Keybinds         ? "true" : "false",   szDebugName);
@@ -8078,7 +8064,7 @@ PLUGIN_API void InitializePlugin()
     srand((unsigned int)time(0));
 
     // setup global vars
-    sprintf_s(szDebugName, "%s\\MQ2MoveUtils-debug.ini", gszINIPath);
+    sprintf_s(szDebugName, "%s\\MQ2MoveUtils-debug.ini", gPathConfig);
 
     // instance classes
     ME     = new CMUCharacter();
@@ -8237,7 +8223,7 @@ PLUGIN_API void OnAddSpawn(PSPAWNINFO pNewSpawn)
 
     if (pNewSpawn->GM)
     {
-        A_TIME_TYPE tCurrentTime;
+        __time64_t tCurrentTime;
         char szTime[30] = {0};
 		struct tm THE_TIME = { 0 };
 #ifdef OLD_COMPILER_USER
@@ -8271,7 +8257,7 @@ PLUGIN_API void OnRemoveSpawn(PSPAWNINFO pOldSpawn)
 
     if (pOldSpawn->GM && SET->BreakGM && pMU && pMU->BrokeGM)
     {
-        A_TIME_TYPE tCurrentTime;
+        __time64_t tCurrentTime;
         char szTime[30] = {0};
 		struct tm THE_TIME = { 0 };
 #ifdef OLD_COMPILER_USER
