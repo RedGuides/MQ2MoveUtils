@@ -2321,47 +2321,47 @@ public:
                 strcpy_s(DataTypeTemp, "ON");
             }
             Dest.Ptr  = &DataTypeTemp[0];
-            Dest.Type = pStringType;
+            Dest.Type = mq::datatypes::pStringType;
             return true;
         case Leash:
             Dest.DWord = CURCAMP->Leash;
-            Dest.Type  = pBoolType;
+            Dest.Type  = mq::datatypes::pBoolType;
             return true;
         case AnchorY:
             Dest.Float = CURCAMP->Y;
-            Dest.Type  = pFloatType;
+            Dest.Type  = mq::datatypes::pFloatType;
             return true;
         case AnchorX:
             Dest.Float = CURCAMP->X;
-            Dest.Type  = pFloatType;
+            Dest.Type  = mq::datatypes::pFloatType;
             return true;
         case LeashLength:
             Dest.Float = CURCAMP->Length;
-            Dest.Type  = pFloatType;
+            Dest.Type  = mq::datatypes::pFloatType;
             return true;
         case CampRadius:
             Dest.Float = CURCAMP->Radius;
-            Dest.Type  = pFloatType;
+            Dest.Type  = mq::datatypes::pFloatType;
             return true;
         case MinDelay:
             Dest.DWord = CAMP->Min;
-            Dest.Type  = pIntType;
+            Dest.Type  = mq::datatypes::pIntType;
             return true;
         case MaxDelay:
             Dest.DWord = CAMP->Max;
-            Dest.Type  = pIntType;
+            Dest.Type  = mq::datatypes::pIntType;
             return true;
         case Returning:
             Dest.DWord = CAMP->DoReturn;
-            Dest.Type  = pBoolType;
+            Dest.Type  = mq::datatypes::pBoolType;
             return true;
         case AltAnchorY:
             Dest.Float = ALTCAMP->Y;
-            Dest.Type  = pFloatType;
+            Dest.Type  = mq::datatypes::pFloatType;
             return true;
         case AltAnchorX:
             Dest.Float = ALTCAMP->X;
-            Dest.Type  = pFloatType;
+            Dest.Type  = mq::datatypes::pFloatType;
             return true;
         case CampDist:
             Dest.Float = 0.0f;
@@ -2370,7 +2370,7 @@ public:
                 PSPAWNINFO pLPlayer = (PSPAWNINFO)pLocalPlayer;
                 Dest.Float = GetDistance(pLPlayer->Y, pLPlayer->X, CURCAMP->Y, CURCAMP->X);
             }
-            Dest.Type = pFloatType;
+            Dest.Type = mq::datatypes::pFloatType;
             return true;
         case AltCampDist:
             Dest.Float = 0.0f;
@@ -2379,39 +2379,39 @@ public:
                 PSPAWNINFO pLPlayer = (PSPAWNINFO)pLocalPlayer;
                 Dest.Float = GetDistance(pLPlayer->Y, pLPlayer->X, ALTCAMP->Y, ALTCAMP->X);
             }
-            Dest.Type = pFloatType;
+            Dest.Type = mq::datatypes::pFloatType;
             return true;
         case AltRadius:
             Dest.Float = ALTCAMP->Radius;
-            Dest.Type  = pFloatType;
+            Dest.Type  = mq::datatypes::pFloatType;
             return true;
         case Scatter:
             Dest.DWord = CURCAMP->Scatter;
-            Dest.Type  = pBoolType;
+            Dest.Type  = mq::datatypes::pBoolType;
             return true;
         case ReturnNoAggro:
             Dest.DWord = CURCAMP->NoAggro;
-            Dest.Type  = pBoolType;
+            Dest.Type  = mq::datatypes::pBoolType;
             return true;
         case ReturnNotLooting:
             Dest.DWord = CURCAMP->NotLoot;
-            Dest.Type  = pBoolType;
+            Dest.Type  = mq::datatypes::pBoolType;
             return true;
         case ReturnHaveTarget:
             Dest.DWord = CURCAMP->HaveTarget;
-            Dest.Type  = pBoolType;
+            Dest.Type  = mq::datatypes::pBoolType;
             return true;
         case Bearing:
             Dest.Float = CURCAMP->Bearing;
-            Dest.Type  = pFloatType;
+            Dest.Type  = mq::datatypes::pFloatType;
             return true;
         case ScatDist:
             Dest.Float = CURCAMP->ScatDist;
-            Dest.Type  = pFloatType;
+            Dest.Type  = mq::datatypes::pFloatType;
             return true;
         case ScatSize:
             Dest.Float = CURCAMP->ScatSize;
-            Dest.Type  = pFloatType;
+            Dest.Type  = mq::datatypes::pFloatType;
             return true;
         }
         return false;
@@ -2508,31 +2508,31 @@ public:
                 strcpy_s(DataTypeTemp, "ON");
             }
             Dest.Ptr  = &DataTypeTemp[0];
-            Dest.Type = pStringType;
+            Dest.Type = mq::datatypes::pStringType;
             return true;
         case Active:
             Dest.DWord = STICK->On;
-            Dest.Type  = pBoolType;
+            Dest.Type  = mq::datatypes::pBoolType;
             return true;
         case Distance:
             Dest.Float = STICK->Dist;
-            Dest.Type  = pFloatType;
+            Dest.Type  = mq::datatypes::pFloatType;
             return true;
         case MoveBehind:
             Dest.DWord = STICK->Behind;
-            Dest.Type  = pBoolType;
+            Dest.Type  = mq::datatypes::pBoolType;
             return true;
         case MoveBack:
             Dest.DWord = STICK->MoveBack;
-            Dest.Type  = pBoolType;
+            Dest.Type  = mq::datatypes::pBoolType;
             return true;
         case Loose:
             Dest.DWord = (pMU->Head == H_LOOSE) ? true : false;
-            Dest.Type  = pBoolType;
+            Dest.Type  = mq::datatypes::pBoolType;
             return true;
         case Paused:
             Dest.DWord = PAUSE->PausedMU;
-            Dest.Type  = pBoolType;
+            Dest.Type  = mq::datatypes::pBoolType;
             return true;
         case Behind:
             Dest.DWord = false;
@@ -2541,7 +2541,7 @@ public:
                 PSPAWNINFO pChSpawn = (PSPAWNINFO)pCharSpawn;
                 Dest.DWord = (fabs(GetDistance(pChSpawn, psTarget)) <= ((STICK->Dist > 0.0f ? STICK->Dist : (psTarget->StandState ? get_melee_range(pLocalPlayer, (PlayerClient*)psTarget) : 15.0f)) * STICK->DistModP + STICK->DistMod) && fabs(MOVE->AngDist(psTarget->Heading, pChSpawn->Heading)) <= STICK->ArcBehind) ? true : false;
             }
-            Dest.Type = pBoolType;
+            Dest.Type = mq::datatypes::pBoolType;
             return true;
         case Stopped:
             Dest.DWord = false;
@@ -2549,11 +2549,11 @@ public:
             {
                 Dest.DWord = (fabs(GetDistance((PSPAWNINFO)pCharSpawn, psTarget)) <= STICK->Dist) ? true : false;
             }
-            Dest.Type = pBoolType;
+            Dest.Type = mq::datatypes::pBoolType;
             return true;
         case Pin:
             Dest.DWord = STICK->Pin;
-            Dest.Type  = pBoolType;
+            Dest.Type  = mq::datatypes::pBoolType;
             return true;
         case StickTarget:
             Dest.Int = 0;
@@ -2561,7 +2561,7 @@ public:
             {
                 Dest.Int = psTarget->SpawnID;
             }
-            Dest.Type = pIntType;
+            Dest.Type = mq::datatypes::pIntType;
             return true;
         case StickTargetName:
             strcpy_s(DataTypeTemp, "NONE");
@@ -2570,23 +2570,23 @@ public:
                 strcpy_s(DataTypeTemp, psTarget->DisplayedName);
             }
             Dest.Ptr  = &DataTypeTemp[0];
-            Dest.Type = pStringType;
+            Dest.Type = mq::datatypes::pStringType;
             return true;
         case DistMod:
             Dest.Float = STICK->DistMod;
-            Dest.Type  = pFloatType;
+            Dest.Type  = mq::datatypes::pFloatType;
             return true;
         case DistModPercent:
             Dest.Float = STICK->DistModP;
-            Dest.Type  = pFloatType;
+            Dest.Type  = mq::datatypes::pFloatType;
             return true;
         case Always:
             Dest.DWord = STICK->Always;
-            Dest.Type  = pBoolType;
+            Dest.Type  = mq::datatypes::pBoolType;
             return true;
         case Broken:
             Dest.DWord = pMU->StickBroke;
-            Dest.Type  = pBoolType;
+            Dest.Type  = mq::datatypes::pBoolType;
             return true;
         }
         return false;
@@ -2659,7 +2659,7 @@ public:
         {
         case Moving:
             Dest.DWord = MOVETO->On;
-            Dest.Type  = pBoolType;
+            Dest.Type  = mq::datatypes::pBoolType;
             return true;
         case Stopped:
             /*if (pLocalPlayer)
@@ -2667,7 +2667,7 @@ public:
                 Dest.DWord = (fabs(GetDistance(((PSPAWNINFO)pCharSpawn)->Y, ((PSPAWNINFO)pCharSpawn)->X, MOVETO->Y, MOVETO->X)) <= MOVETO->Dist) ? true : false;
             }*/
             Dest.DWord = pMU->StoppedMoveto;
-            Dest.Type  = pBoolType;
+            Dest.Type  = mq::datatypes::pBoolType;
             return true;
         case CampStopped:
             Dest.DWord = false;
@@ -2675,27 +2675,27 @@ public:
             {
                 Dest.DWord = (fabs(GetDistance(((PSPAWNINFO)pCharSpawn)->Y, ((PSPAWNINFO)pCharSpawn)->X, CAMP->Y, CAMP->X)) <= MOVETO->Dist) ? true : false;
             }
-            Dest.Type  = pBoolType;
+            Dest.Type  = mq::datatypes::pBoolType;
             return true;
         case UseWalk:
             Dest.DWord = MOVETO->Walk;
-            Dest.Type  = pBoolType;
+            Dest.Type  = mq::datatypes::pBoolType;
             return true;
         case ArrivalDist:
             Dest.Float = MOVETO->Dist;
-            Dest.Type  = pFloatType;
+            Dest.Type  = mq::datatypes::pFloatType;
             return true;
         case ArrivalDistY:
             Dest.Float = MOVETO->DistY;
-            Dest.Type  = pFloatType;
+            Dest.Type  = mq::datatypes::pFloatType;
             return true;
         case ArrivalDistX:
             Dest.Float = MOVETO->DistX;
-            Dest.Type  = pFloatType;
+            Dest.Type  = mq::datatypes::pFloatType;
             return true;
         case Broken:
             Dest.DWord = pMU->MovetoBroke;
-            Dest.Type  = pBoolType;
+            Dest.Type  = mq::datatypes::pBoolType;
             return true;
         }
         return false;
@@ -2779,19 +2779,19 @@ public:
                 strcpy_s(DataTypeTemp, "ON");
             }
             Dest.Ptr  = &DataTypeTemp[0];
-            Dest.Type = pStringType;
+            Dest.Type = mq::datatypes::pStringType;
             return true;
         case CircleY:
             Dest.Float = CIRCLE->Y;
-            Dest.Type  = pFloatType;
+            Dest.Type  = mq::datatypes::pFloatType;
             return true;
         case CircleX:
             Dest.Float = CIRCLE->X;
-            Dest.Type = pFloatType;
+            Dest.Type = mq::datatypes::pFloatType;
             return true;
         case Drunken:
             Dest.DWord = CIRCLE->Drunk;
-            Dest.Type  = pBoolType;
+            Dest.Type  = mq::datatypes::pBoolType;
             return true;
         case Rotation:
             strcpy_s(DataTypeTemp, "CW");
@@ -2800,7 +2800,7 @@ public:
                 strcpy_s(DataTypeTemp, "CCW");
             }
             Dest.Ptr = &DataTypeTemp[0];
-            Dest.Type = pStringType;
+            Dest.Type = mq::datatypes::pStringType;
             return true;
         case Direction:
             strcpy_s(DataTypeTemp, "FORWARDS");
@@ -2809,19 +2809,19 @@ public:
                 strcpy_s(DataTypeTemp, "BACKWARDS");
             }
             Dest.Ptr  = &DataTypeTemp[0];
-            Dest.Type = pStringType;
+            Dest.Type = mq::datatypes::pStringType;
             return true;
         case Clockwise:
             Dest.DWord = !CIRCLE->CCW;
-            Dest.Type  = pBoolType;
+            Dest.Type  = mq::datatypes::pBoolType;
             return true;
         case Backwards:
             Dest.DWord = CIRCLE->Backward;
-            Dest.Type  = pBoolType;
+            Dest.Type  = mq::datatypes::pBoolType;
             return true;
         case Radius:
             Dest.Float = CIRCLE->Radius;
-            Dest.Type  = pFloatType;
+            Dest.Type  = mq::datatypes::pFloatType;
             return true;
         }
         return false;
@@ -2928,7 +2928,7 @@ public:
                 strcpy_s(DataTypeTemp, "MAKECAMP");
             }
             Dest.Ptr  = &DataTypeTemp[0];
-            Dest.Type = pStringType;
+            Dest.Type = mq::datatypes::pStringType;
             return true;
         case Stuck:
             Dest.DWord = false;
@@ -2936,68 +2936,68 @@ public:
             {
                 Dest.DWord = true;
             }
-            Dest.Type = pBoolType;
+            Dest.Type = mq::datatypes::pBoolType;
             return true;
         case Summoned:
             Dest.DWord = pMU->BrokeSummon;
-            Dest.Type  = pBoolType;
+            Dest.Type  = mq::datatypes::pBoolType;
             return true;
         case StuckLogic:
             Dest.DWord = STUCK->On;
-            Dest.Type  = pBoolType;
+            Dest.Type  = mq::datatypes::pBoolType;
             return true;
         case Verbosity:
             Dest.DWord = (uiVerbLevel & V_VERBOSITY) == V_VERBOSITY ? true : false;
-            Dest.Type  = pBoolType;
+            Dest.Type  = mq::datatypes::pBoolType;
             return true;
         case FullVerbosity:
             Dest.DWord = (uiVerbLevel & V_FULLVERBOSITY) == V_FULLVERBOSITY ? true : false;
-            Dest.Type  = pBoolType;
+            Dest.Type  = mq::datatypes::pBoolType;
             return true;
         case TotalSilence:
             Dest.DWord = (uiVerbLevel == V_SILENCE) ? true : false;
-            Dest.Type  = pBoolType;
+            Dest.Type  = mq::datatypes::pBoolType;
             return true;
         case Aggro:
             Dest.DWord = pMU->Aggro;
-            Dest.Type  = pBoolType;
+            Dest.Type  = mq::datatypes::pBoolType;
             return true;
         case PauseMinDelay:
             Dest.Int  = PAUSE->Min;
-            Dest.Type = pIntType;
+            Dest.Type = mq::datatypes::pIntType;
             return true;
         case PauseMaxDelay:
             Dest.Int  = PAUSE->Max;
-            Dest.Type = pIntType;
+            Dest.Type = mq::datatypes::pIntType;
             return true;
         case PulseCheck:
             Dest.Int  = STUCK->Check;
-            Dest.Type = pIntType;
+            Dest.Type = mq::datatypes::pIntType;
             return true;
         case PulseUnstuck:
             Dest.Int  = STUCK->Unstuck;
-            Dest.Type = pIntType;
+            Dest.Type = mq::datatypes::pIntType;
             return true;
         case TryToJump:
             Dest.DWord = STUCK->Jump;
-            Dest.Type  = pBoolType;
+            Dest.Type  = mq::datatypes::pBoolType;
             return true;
         case DistStuck:
             Dest.Float = STUCK->Dist;
-            Dest.Type  = pFloatType;
+            Dest.Type  = mq::datatypes::pFloatType;
             return true;
         case Version:
             sprintf_s(DataTypeTemp, "%1.4f", MQ2Version);
             Dest.Ptr  = &DataTypeTemp[0];
-            Dest.Type = pStringType;
+            Dest.Type = mq::datatypes::pStringType;
             return true;
         case MovePause:
             Dest.DWord = SET->PauseKB;
-            Dest.Type  = pBoolType;
+            Dest.Type  = mq::datatypes::pBoolType;
             return true;
         case GM:
             Dest.DWord = pMU->BrokeGM;
-            Dest.Type  = pBoolType;
+            Dest.Type  = mq::datatypes::pBoolType;
             return true;
         }
         return false;
