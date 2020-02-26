@@ -13,19 +13,14 @@ as required by the copyright holders of these functions, and desired by the deve
 //Version 12.3 Moved patterns - SwiftyMUSE Apr 23 2018
 //Version 12.4 Fixed a NULL ptr crash - EqMule May 28 2018
 
-#define PLUGIN_NAME  "MQ2MoveUtils"		// Plugin Name
-#define PLUGIN_DATE   20180528			// Plugin Date
-#define PLUGIN_VERS   12.4				// Plugin Version
+#include <mq/Plugin.h>
 
-#ifndef PLUGIN_API
-#include "../MQ2Plugin.h"
+#include <cmath>
+
+constexpr auto PLUGIN_NAME = "MQ2MoveUtils";
+PLUGIN_VERSION(12.4);
+
 PreSetup(PLUGIN_NAME);
-PLUGIN_VERSION(PLUGIN_VERS);
-#endif PLUGIN_API
-
-#include "../MQ2Plugin.h"
-#include "math.h"
-#include <vector>
 
 // uncomment these lines to enable debugspew spam
 //#define DEBUGMAIN
@@ -33,18 +28,6 @@ PLUGIN_VERSION(PLUGIN_VERS);
 //#define DEBUGSTUCK
 // debugspew for trivial messages
 //#define DEBUGMISC
-
-// uncomment this line if you use VC6
-//#define OLD_COMPILER_USER 1
-#if defined(_MSC_VER) && _MSC_VER <=1200
-#define OLD_COMPILER_USER 1
-#endif
-
-#ifdef OLD_COMPILER_USER
- #define A_TIME_TYPE  time_t
-#else
- #define A_TIME_TYPE  __time64_t
-#endif
 
 Blech *pMoveEvent = 0;
 // ------------------------------------------------------------------------------
@@ -377,17 +360,13 @@ class CMUCharacter
 public:
     bool IsBard()
     {
-        PCHARINFO2 pChar = GetCharInfo2();
-        if (GetCharInfo()->pSpawn->mActorClient.Class == Bard)
-        {
-            return true;
-        }
-        return false;
+		auto pChar = GetCharInfo();
+		return pChar && pChar->pSpawn && pChar->pSpawn->mActorClient.Class == Bard;
     };
 
     bool InCombat()
     {
-        if (ValidIngame() && ((PCPLAYERWND)pPlayerWnd)->CombatState == 0 && ((CXWnd*)pPlayerWnd)->GetChildItem("PW_CombatStateAnim"))
+        if (ValidIngame() && pPlayerWnd->CombatState == 0 && pPlayerWnd->GetChildItem("PW_CombatStateAnim"))
         {
             return true;
         }
@@ -397,7 +376,7 @@ public:
     bool IsMe(PSPAWNINFO pCheck)
     {
         if (!pCheck || !pLocalPlayer) return false;
-        if (pCheck->SpawnID == ((PSPAWNINFO)pCharSpawn)->SpawnID || pCheck->SpawnID == ((PSPAWNINFO)pLocalPlayer)->SpawnID)
+        if (pCheck->SpawnID == pCharSpawn->SpawnID || pCheck->SpawnID == pLocalPlayer->SpawnID)
         {
             return true;
         }
@@ -1563,8 +1542,8 @@ public:
         }
         if (bWalkOn != bWalking)
         {
-            MQ2Globals::ExecuteCmd(iRunWalk, 1, 0);
-            MQ2Globals::ExecuteCmd(iRunWalk, 0, 0);
+            ExecuteCmd(iRunWalk, 1, 0);
+            ExecuteCmd(iRunWalk, 0, 0);
         }
     };
 
@@ -1590,8 +1569,8 @@ public:
             EzCommand("/stand");
             break;
         case STANDSTATE_DUCK:
-            /*MQ2Globals::ExecuteCmd(iDuckKey, 1, 0);
-            MQ2Globals::ExecuteCmd(iDuckKey, 0, 0);*/ // rare server desync can happen from doing it this way
+            /*ExecuteCmd(iDuckKey, 1, 0);
+            ExecuteCmd(iDuckKey, 0, 0);*/ // rare server desync can happen from doing it this way
             EzCommand("/stand");
             break;
         case STANDSTATE_STAND:
@@ -1880,23 +1859,23 @@ private:
         {
         case GO_FORWARD:
             pMU->CmdFwd = true;
-            MQ2Globals::ExecuteCmd(iBackward, 0, 0);
-            MQ2Globals::ExecuteCmd(iForward,  1, 0);
+            ExecuteCmd(iBackward, 0, 0);
+            ExecuteCmd(iForward,  1, 0);
             break;
         case GO_BACKWARD:
             pMU->CmdFwd = false;
-            MQ2Globals::ExecuteCmd(iForward,  0, 0);
-            MQ2Globals::ExecuteCmd(iBackward, 1, 0);
+            ExecuteCmd(iForward,  0, 0);
+            ExecuteCmd(iBackward, 1, 0);
             break;
         case GO_LEFT:
             pMU->CmdStrafe = true;
-            MQ2Globals::ExecuteCmd(iStrafeRight, 0, 0);
-            MQ2Globals::ExecuteCmd(iStrafeLeft,  1, 0);
+            ExecuteCmd(iStrafeRight, 0, 0);
+            ExecuteCmd(iStrafeLeft,  1, 0);
             break;
         case GO_RIGHT:
             pMU->CmdStrafe = true;
-            MQ2Globals::ExecuteCmd(iStrafeLeft,  0, 0);
-            MQ2Globals::ExecuteCmd(iStrafeRight, 1, 0);
+            ExecuteCmd(iStrafeLeft,  0, 0);
+            ExecuteCmd(iStrafeRight, 1, 0);
             break;
         }
     };
@@ -1906,30 +1885,30 @@ private:
         switch (ucDirection)
         {
         case APPLY_TO_ALL:
-            MQ2Globals::ExecuteCmd(iForward,     0, 0);
-            MQ2Globals::ExecuteCmd(iBackward,    1, 0);
-            MQ2Globals::ExecuteCmd(iBackward,    0, 0);
-            MQ2Globals::ExecuteCmd(iStrafeLeft,  0, 0);
-            MQ2Globals::ExecuteCmd(iStrafeRight, 1, 0);
-            MQ2Globals::ExecuteCmd(iStrafeRight, 0, 0);
+            ExecuteCmd(iForward,     0, 0);
+            ExecuteCmd(iBackward,    1, 0);
+            ExecuteCmd(iBackward,    0, 0);
+            ExecuteCmd(iStrafeLeft,  0, 0);
+            ExecuteCmd(iStrafeRight, 1, 0);
+            ExecuteCmd(iStrafeRight, 0, 0);
             pMU->CmdFwd = pMU->CmdStrafe = false;
             break;
         case KILL_FB:
         case GO_FORWARD:
         case GO_BACKWARD:
-            MQ2Globals::ExecuteCmd(iForward,     1, 0);
-            MQ2Globals::ExecuteCmd(iForward,     0, 0);
-            MQ2Globals::ExecuteCmd(iBackward,    1, 0);
-            MQ2Globals::ExecuteCmd(iBackward,    0, 0);
+            ExecuteCmd(iForward,     1, 0);
+            ExecuteCmd(iForward,     0, 0);
+            ExecuteCmd(iBackward,    1, 0);
+            ExecuteCmd(iBackward,    0, 0);
             pMU->CmdFwd = false;
             break;
         case KILL_STRAFE:
         case GO_LEFT:
         case GO_RIGHT:
-            MQ2Globals::ExecuteCmd(iStrafeRight, 1, 0);
-            MQ2Globals::ExecuteCmd(iStrafeRight, 0, 0);
-            MQ2Globals::ExecuteCmd(iStrafeLeft,  1, 0);
-            MQ2Globals::ExecuteCmd(iStrafeLeft,  0, 0);
+            ExecuteCmd(iStrafeRight, 1, 0);
+            ExecuteCmd(iStrafeRight, 0, 0);
+            ExecuteCmd(iStrafeLeft,  1, 0);
+            ExecuteCmd(iStrafeLeft,  0, 0);
             pMU->CmdStrafe = false;
             break;
         }
@@ -2075,24 +2054,19 @@ void CMUActive::AggroTLO()
 class CMoveUtilsWnd : public CCustomWnd
 {
 public:
-    CStmlWnd*         StmlOut;
-    CXWnd*            OutWnd;
-    struct _CSIDLWND* OutStruct;
+	CStmlWnd* OutWnd;
 
-    CMoveUtilsWnd(CXStr& Template) : CCustomWnd(Template)
+    CMoveUtilsWnd(const CXStr& Template) : CCustomWnd(Template)
     {
-        SetWndNotification(CMoveUtilsWnd);
-        StmlOut                                     = (CStmlWnd*)GetChildItem("CW_ChatOutput");
-        OutWnd                                      = (CXWnd*)StmlOut;
+		OutWnd = (CStmlWnd*)GetChildItem("CW_ChatOutput");
         OutWnd->SetClickable(1);
-        OutStruct                                   = (_CSIDLWND*)GetChildItem("CW_ChatOutput");
 		SetEscapable(0);
-		StmlOut->MaxLines                           = 0x190;
+		OutWnd->MaxLines = 0x190;
 		AddStyle(CWS_TITLE | CWS_MINIMIZE | CWS_RESIZEBORDER);
 		RemoveStyle(CWS_TRANSPARENT | CWS_CLOSE);
     };
 
-    int WndNotification(CXWnd* pWnd, unsigned int uiMessage, void* pData)
+    virtual int WndNotification(CXWnd* pWnd, unsigned int uiMessage, void* pData) override
     {
         if (pWnd == NULL && uiMessage == XWM_CLOSE)
         {
@@ -2100,7 +2074,17 @@ public:
             return 0;
         }
         return CSidlScreenWnd::WndNotification(pWnd, uiMessage, pData);
-    };
+    }
+
+	void Clear()
+	{
+		if (OutWnd)
+		{
+			OutWnd->SetSTMLText("");
+			OutWnd->ForceParseNow();
+			OutWnd->SetVScrollPos(OutWnd->GetVScrollMax());
+		}
+	}
 };
 
 class CMUWndHandler
@@ -2129,19 +2113,19 @@ public:
     void Clear()
     {
         if (!OurWnd) return;
-        ((CChatWindow*)OurWnd)->Clear();
+        OurWnd->Clear();
     };
 
     void Hover()
     {
         if (!OurWnd) return;
-        ((CXWnd*)OurWnd)->DoAllDrawing();
+        OurWnd->DoAllDrawing();
     };
 
     void Min()
     {
         if (!OurWnd) return;
-        ((CXWnd*)OurWnd)->OnMinimizeBox();
+        OurWnd->OnMinimizeBox();
     };
 
     void Save()
@@ -2195,77 +2179,63 @@ protected:
 
         NewFont(GetPrivateProfileInt(SET->SaveByChar ? szCharName : "Window", "FontSize", 2, INIFileName));
         GetPrivateProfileString(SET->SaveByChar ? szCharName : "Window", "WindowTitle", "MoveUtils", szWindowText, MAX_STRING, INIFileName);
-        OurWnd->CSetWindowText(szWindowText);
+        OurWnd->SetWindowText(szWindowText);
         //SetCXStr(&OurWnd->WindowText, szWindowText);
-        ((CXWnd*)OurWnd)->Show(1, 1);
-        OurWnd->OutStruct->RemoveStyle(CWS_CLOSE);
+        OurWnd->Show(1, 1);
+        OurWnd->OutWnd->RemoveStyle(CWS_CLOSE);
         //BitOff(OurWnd->OutStruct->WindowStyle, CWS_CLOSE);
     };
 
     void SaveWnd()
     {
-        PCSIDLWND UseWnd = (PCSIDLWND)OurWnd;
         char szTemp[MAX_STRING]                = {0};
 
-        WritePrivateProfileString(SET->SaveByChar ? szCharName : "Window", "ChatTop",      SafeItoa(UseWnd->GetLocation().top,    szTemp, 10), INIFileName);
-        WritePrivateProfileString(SET->SaveByChar ? szCharName : "Window", "ChatBottom",   SafeItoa(UseWnd->GetLocation().bottom, szTemp, 10), INIFileName);
-        WritePrivateProfileString(SET->SaveByChar ? szCharName : "Window", "ChatLeft",     SafeItoa(UseWnd->GetLocation().left,   szTemp, 10), INIFileName);
-        WritePrivateProfileString(SET->SaveByChar ? szCharName : "Window", "ChatRight",    SafeItoa(UseWnd->GetLocation().right,  szTemp, 10), INIFileName);
-        WritePrivateProfileString(SET->SaveByChar ? szCharName : "Window", "Fades",        SafeItoa(UseWnd->GetFades(),           szTemp, 10), INIFileName);
-        WritePrivateProfileString(SET->SaveByChar ? szCharName : "Window", "Alpha",        SafeItoa(UseWnd->GetAlpha(),           szTemp, 10), INIFileName);
-        WritePrivateProfileString(SET->SaveByChar ? szCharName : "Window", "FadeToAlpha",  SafeItoa(UseWnd->GetFadeToAlpha(),     szTemp, 10), INIFileName);
-        WritePrivateProfileString(SET->SaveByChar ? szCharName : "Window", "Duration",     SafeItoa(UseWnd->GetFadeDuration(),    szTemp, 10), INIFileName);
-        WritePrivateProfileString(SET->SaveByChar ? szCharName : "Window", "Locked",       SafeItoa(UseWnd->IsLocked(),          szTemp, 10), INIFileName);
-        WritePrivateProfileString(SET->SaveByChar ? szCharName : "Window", "Delay",        SafeItoa(UseWnd->GetFadeDelay(),   szTemp, 10), INIFileName);
-        WritePrivateProfileString(SET->SaveByChar ? szCharName : "Window", "BGType",       SafeItoa(UseWnd->GetBGType(),          szTemp, 10), INIFileName);
+        WritePrivateProfileString(SET->SaveByChar ? szCharName : "Window", "ChatTop",      SafeItoa(OurWnd->GetLocation().top,    szTemp, 10), INIFileName);
+        WritePrivateProfileString(SET->SaveByChar ? szCharName : "Window", "ChatBottom",   SafeItoa(OurWnd->GetLocation().bottom, szTemp, 10), INIFileName);
+        WritePrivateProfileString(SET->SaveByChar ? szCharName : "Window", "ChatLeft",     SafeItoa(OurWnd->GetLocation().left,   szTemp, 10), INIFileName);
+        WritePrivateProfileString(SET->SaveByChar ? szCharName : "Window", "ChatRight",    SafeItoa(OurWnd->GetLocation().right,  szTemp, 10), INIFileName);
+        WritePrivateProfileString(SET->SaveByChar ? szCharName : "Window", "Fades",        SafeItoa(OurWnd->GetFades(),           szTemp, 10), INIFileName);
+        WritePrivateProfileString(SET->SaveByChar ? szCharName : "Window", "Alpha",        SafeItoa(OurWnd->GetAlpha(),           szTemp, 10), INIFileName);
+        WritePrivateProfileString(SET->SaveByChar ? szCharName : "Window", "FadeToAlpha",  SafeItoa(OurWnd->GetFadeToAlpha(),     szTemp, 10), INIFileName);
+        WritePrivateProfileString(SET->SaveByChar ? szCharName : "Window", "Duration",     SafeItoa(OurWnd->GetFadeDuration(),    szTemp, 10), INIFileName);
+        WritePrivateProfileString(SET->SaveByChar ? szCharName : "Window", "Locked",       SafeItoa(OurWnd->IsLocked(),           szTemp, 10), INIFileName);
+        WritePrivateProfileString(SET->SaveByChar ? szCharName : "Window", "Delay",        SafeItoa(OurWnd->GetFadeDelay(),       szTemp, 10), INIFileName);
+        WritePrivateProfileString(SET->SaveByChar ? szCharName : "Window", "BGType",       SafeItoa(OurWnd->GetBGType(),          szTemp, 10), INIFileName);
 		ARGBCOLOR col = { 0 };
-		col.ARGB = UseWnd->GetBGColor();
-		WritePrivateProfileString(SET->SaveByChar ? szCharName : "Window", "BGTint.alpha",   SafeItoa(col.A,       szTemp, 10), INIFileName);
-		WritePrivateProfileString(SET->SaveByChar ? szCharName : "Window", "BGTint.red",   SafeItoa(col.R,       szTemp, 10), INIFileName);
-        WritePrivateProfileString(SET->SaveByChar ? szCharName : "Window", "BGTint.green", SafeItoa(col.G,       szTemp, 10), INIFileName);
-        WritePrivateProfileString(SET->SaveByChar ? szCharName : "Window", "BGTint.blue",  SafeItoa(col.B,       szTemp, 10), INIFileName);
-        WritePrivateProfileString(SET->SaveByChar ? szCharName : "Window", "FontSize",     SafeItoa(FontSize,                szTemp, 10), INIFileName);
+		col.ARGB = OurWnd->GetBGColor();
+		WritePrivateProfileString(SET->SaveByChar ? szCharName : "Window", "BGTint.alpha", SafeItoa(col.A,    szTemp, 10), INIFileName);
+		WritePrivateProfileString(SET->SaveByChar ? szCharName : "Window", "BGTint.red",   SafeItoa(col.R,    szTemp, 10), INIFileName);
+        WritePrivateProfileString(SET->SaveByChar ? szCharName : "Window", "BGTint.green", SafeItoa(col.G,    szTemp, 10), INIFileName);
+        WritePrivateProfileString(SET->SaveByChar ? szCharName : "Window", "BGTint.blue",  SafeItoa(col.B,    szTemp, 10), INIFileName);
+        WritePrivateProfileString(SET->SaveByChar ? szCharName : "Window", "FontSize",     SafeItoa(FontSize, szTemp, 10), INIFileName);
 
-        GetCXStr(UseWnd->CGetWindowText(), szTemp);
-        WritePrivateProfileString(SET->SaveByChar ? szCharName : "Window", "WindowTitle", szTemp, INIFileName);
+        WritePrivateProfileString(SET->SaveByChar ? szCharName : "Window", "WindowTitle", OurWnd->GetWindowText().c_str(), INIFileName);
     };
 
     void Output(char* szText)
     {
-        ((CXWnd*)OurWnd)->Show(1, 1);
+        OurWnd->Show(1, 1);
         char szProcessed[MAX_STRING] = {0};
         StripMQChat(szText, szProcessed);
         CheckChatForEvent(szProcessed);
         MQToSTML(szText, szProcessed, MAX_STRING);
         strcat_s(szProcessed, "<br>");
-        CXStr NewText(szProcessed);
-        (OurWnd->StmlOut)->AppendSTML(NewText);
-        (OurWnd->OutWnd)->SetVScrollPos(OurWnd->OutStruct->GetVScrollMax());
+        OurWnd->OutWnd->AppendSTML(szProcessed);
+        OurWnd->OutWnd->SetVScrollPos(OurWnd->OutWnd->GetVScrollMax());
     };
 
-    void SetFontSize(unsigned int uiSize)
+    void SetFontSize(int uiSize)
     {
-        struct FONTDATA
-        {
-            unsigned long ulNumFonts;
-            char**        ppFonts;
-        };
-        FONTDATA*      pFonts;       // font array structure
-        unsigned long* pulSelFont;   // selected font
-        pFonts = (FONTDATA*)&(((char*)pWndMgr)[EQ_CHAT_FONT_OFFSET]);
-        if (!pFonts->ppFonts || uiSize >= (int)pFonts->ulNumFonts)
-        {
-            return;
-        }
-        pulSelFont = (unsigned long*)pFonts->ppFonts[uiSize];
+		if (uiSize < 0 || uiSize > pWndMgr->FontsArray.GetCount())
+			return;
 
-        CXStr ContStr(((CStmlWnd*)OurWnd->StmlOut)->GetSTMLText());
-        ((CXWnd*)OurWnd->StmlOut)->SetFont(pulSelFont);
-        ((CStmlWnd*)OurWnd->StmlOut)->SetSTMLText(ContStr, 1, 0);
-        ((CStmlWnd*)OurWnd->StmlOut)->ForceParseNow();
-        ((CXWnd*)OurWnd->StmlOut)->SetVScrollPos(OurWnd->StmlOut->GetVScrollMax());
+		CXStr ContStr(OurWnd->OutWnd->GetSTMLText());
+		OurWnd->OutWnd->SetFont(pWndMgr->FontsArray[uiSize]);
+		OurWnd->OutWnd->SetSTMLText(ContStr, 1, 0);
+		OurWnd->OutWnd->ForceParseNow();
+		OurWnd->OutWnd->SetVScrollPos(OurWnd->OutWnd->GetVScrollMax());
 
-        FontSize = uiSize;
+		FontSize = uiSize;
     };
 
     CMoveUtilsWnd* OurWnd;
@@ -2334,9 +2304,9 @@ public:
         TypeMember(ScatSize);
     }
 
-    bool GetMember(MQ2VARPTR VarPtr, char* Member, char* Index, MQ2TYPEVAR &Dest)
+    bool GetMember(MQVarPtr VarPtr, char* Member, char* Index, MQTypeVar &Dest)
     {
-        PMQ2TYPEMEMBER pMember = MQ2MakeCampType::FindMember(Member);
+        auto pMember = MQ2MakeCampType::FindMember(Member);
         if (!pMember || !ValidIngame(false)) return false;
         switch((MakeCampMembers)pMember->ID)
         {
@@ -2351,47 +2321,47 @@ public:
                 strcpy_s(DataTypeTemp, "ON");
             }
             Dest.Ptr  = &DataTypeTemp[0];
-            Dest.Type = pStringType;
+            Dest.Type = mq::datatypes::pStringType;
             return true;
         case Leash:
             Dest.DWord = CURCAMP->Leash;
-            Dest.Type  = pBoolType;
+            Dest.Type  = mq::datatypes::pBoolType;
             return true;
         case AnchorY:
             Dest.Float = CURCAMP->Y;
-            Dest.Type  = pFloatType;
+            Dest.Type  = mq::datatypes::pFloatType;
             return true;
         case AnchorX:
             Dest.Float = CURCAMP->X;
-            Dest.Type  = pFloatType;
+            Dest.Type  = mq::datatypes::pFloatType;
             return true;
         case LeashLength:
             Dest.Float = CURCAMP->Length;
-            Dest.Type  = pFloatType;
+            Dest.Type  = mq::datatypes::pFloatType;
             return true;
         case CampRadius:
             Dest.Float = CURCAMP->Radius;
-            Dest.Type  = pFloatType;
+            Dest.Type  = mq::datatypes::pFloatType;
             return true;
         case MinDelay:
             Dest.DWord = CAMP->Min;
-            Dest.Type  = pIntType;
+            Dest.Type  = mq::datatypes::pIntType;
             return true;
         case MaxDelay:
             Dest.DWord = CAMP->Max;
-            Dest.Type  = pIntType;
+            Dest.Type  = mq::datatypes::pIntType;
             return true;
         case Returning:
             Dest.DWord = CAMP->DoReturn;
-            Dest.Type  = pBoolType;
+            Dest.Type  = mq::datatypes::pBoolType;
             return true;
         case AltAnchorY:
             Dest.Float = ALTCAMP->Y;
-            Dest.Type  = pFloatType;
+            Dest.Type  = mq::datatypes::pFloatType;
             return true;
         case AltAnchorX:
             Dest.Float = ALTCAMP->X;
-            Dest.Type  = pFloatType;
+            Dest.Type  = mq::datatypes::pFloatType;
             return true;
         case CampDist:
             Dest.Float = 0.0f;
@@ -2400,7 +2370,7 @@ public:
                 PSPAWNINFO pLPlayer = (PSPAWNINFO)pLocalPlayer;
                 Dest.Float = GetDistance(pLPlayer->Y, pLPlayer->X, CURCAMP->Y, CURCAMP->X);
             }
-            Dest.Type = pFloatType;
+            Dest.Type = mq::datatypes::pFloatType;
             return true;
         case AltCampDist:
             Dest.Float = 0.0f;
@@ -2409,45 +2379,45 @@ public:
                 PSPAWNINFO pLPlayer = (PSPAWNINFO)pLocalPlayer;
                 Dest.Float = GetDistance(pLPlayer->Y, pLPlayer->X, ALTCAMP->Y, ALTCAMP->X);
             }
-            Dest.Type = pFloatType;
+            Dest.Type = mq::datatypes::pFloatType;
             return true;
         case AltRadius:
             Dest.Float = ALTCAMP->Radius;
-            Dest.Type  = pFloatType;
+            Dest.Type  = mq::datatypes::pFloatType;
             return true;
         case Scatter:
             Dest.DWord = CURCAMP->Scatter;
-            Dest.Type  = pBoolType;
+            Dest.Type  = mq::datatypes::pBoolType;
             return true;
         case ReturnNoAggro:
             Dest.DWord = CURCAMP->NoAggro;
-            Dest.Type  = pBoolType;
+            Dest.Type  = mq::datatypes::pBoolType;
             return true;
         case ReturnNotLooting:
             Dest.DWord = CURCAMP->NotLoot;
-            Dest.Type  = pBoolType;
+            Dest.Type  = mq::datatypes::pBoolType;
             return true;
         case ReturnHaveTarget:
             Dest.DWord = CURCAMP->HaveTarget;
-            Dest.Type  = pBoolType;
+            Dest.Type  = mq::datatypes::pBoolType;
             return true;
         case Bearing:
             Dest.Float = CURCAMP->Bearing;
-            Dest.Type  = pFloatType;
+            Dest.Type  = mq::datatypes::pFloatType;
             return true;
         case ScatDist:
             Dest.Float = CURCAMP->ScatDist;
-            Dest.Type  = pFloatType;
+            Dest.Type  = mq::datatypes::pFloatType;
             return true;
         case ScatSize:
             Dest.Float = CURCAMP->ScatSize;
-            Dest.Type  = pFloatType;
+            Dest.Type  = mq::datatypes::pFloatType;
             return true;
         }
         return false;
     }
 
-    bool ToString(MQ2VARPTR VarPtr, char* Destination)
+    bool ToString(MQVarPtr VarPtr, char* Destination)
     {
 		strcpy_s(Destination, MAX_STRING, "OFF");
         if (PAUSE->PausedMU || PAUSE->PausedCmd)
@@ -2461,17 +2431,17 @@ public:
         return true;
     }
 
-    bool FromData(MQ2VARPTR &VarPtr, MQ2TYPEVAR &Source)
+    bool FromData(MQVarPtr &VarPtr, MQTypeVar &Source)
     {
         return false;
     }
-    bool FromString(MQ2VARPTR &VarPtr, char* Source)
+    bool FromString(MQVarPtr &VarPtr, char* Source)
     {
         return false;
     }
 };
 
-int dataMakeCamp(char* szName, MQ2TYPEVAR &Ret)
+bool dataMakeCamp(const char* szName, MQTypeVar &Ret)
 {
     Ret.DWord = 1;
     Ret.Type  = pMakeCampType;
@@ -2521,9 +2491,9 @@ public:
         TypeMember(Broken);
     }
 
-    bool GetMember(MQ2VARPTR VarPtr, char* Member, char* Index, MQ2TYPEVAR &Dest)
+    bool GetMember(MQVarPtr VarPtr, char* Member, char* Index, MQTypeVar &Dest)
     {
-        PMQ2TYPEMEMBER pMember = MQ2StickType::FindMember(Member);
+        auto pMember = MQ2StickType::FindMember(Member);
         if (!pMember || !ValidIngame(false)) return false;
         switch((StickMembers)pMember->ID)
         {
@@ -2538,40 +2508,40 @@ public:
                 strcpy_s(DataTypeTemp, "ON");
             }
             Dest.Ptr  = &DataTypeTemp[0];
-            Dest.Type = pStringType;
+            Dest.Type = mq::datatypes::pStringType;
             return true;
         case Active:
             Dest.DWord = STICK->On;
-            Dest.Type  = pBoolType;
+            Dest.Type  = mq::datatypes::pBoolType;
             return true;
         case Distance:
             Dest.Float = STICK->Dist;
-            Dest.Type  = pFloatType;
+            Dest.Type  = mq::datatypes::pFloatType;
             return true;
         case MoveBehind:
             Dest.DWord = STICK->Behind;
-            Dest.Type  = pBoolType;
+            Dest.Type  = mq::datatypes::pBoolType;
             return true;
         case MoveBack:
             Dest.DWord = STICK->MoveBack;
-            Dest.Type  = pBoolType;
+            Dest.Type  = mq::datatypes::pBoolType;
             return true;
         case Loose:
             Dest.DWord = (pMU->Head == H_LOOSE) ? true : false;
-            Dest.Type  = pBoolType;
+            Dest.Type  = mq::datatypes::pBoolType;
             return true;
         case Paused:
             Dest.DWord = PAUSE->PausedMU;
-            Dest.Type  = pBoolType;
+            Dest.Type  = mq::datatypes::pBoolType;
             return true;
         case Behind:
             Dest.DWord = false;
             if (PSPAWNINFO psTarget = (PSPAWNINFO)(STICK->Hold ? GetSpawnByID(STICK->HoldID) : pTarget))
             {
                 PSPAWNINFO pChSpawn = (PSPAWNINFO)pCharSpawn;
-                Dest.DWord = (fabs(GetDistance(pChSpawn, psTarget)) <= ((STICK->Dist > 0.0f ? STICK->Dist : (psTarget->StandState ? get_melee_range(pLocalPlayer, (EQPlayer *)psTarget) : 15.0f)) * STICK->DistModP + STICK->DistMod) && fabs(MOVE->AngDist(psTarget->Heading, pChSpawn->Heading)) <= STICK->ArcBehind) ? true : false;
+                Dest.DWord = (fabs(GetDistance(pChSpawn, psTarget)) <= ((STICK->Dist > 0.0f ? STICK->Dist : (psTarget->StandState ? get_melee_range(pLocalPlayer, (PlayerClient*)psTarget) : 15.0f)) * STICK->DistModP + STICK->DistMod) && fabs(MOVE->AngDist(psTarget->Heading, pChSpawn->Heading)) <= STICK->ArcBehind) ? true : false;
             }
-            Dest.Type = pBoolType;
+            Dest.Type = mq::datatypes::pBoolType;
             return true;
         case Stopped:
             Dest.DWord = false;
@@ -2579,11 +2549,11 @@ public:
             {
                 Dest.DWord = (fabs(GetDistance((PSPAWNINFO)pCharSpawn, psTarget)) <= STICK->Dist) ? true : false;
             }
-            Dest.Type = pBoolType;
+            Dest.Type = mq::datatypes::pBoolType;
             return true;
         case Pin:
             Dest.DWord = STICK->Pin;
-            Dest.Type  = pBoolType;
+            Dest.Type  = mq::datatypes::pBoolType;
             return true;
         case StickTarget:
             Dest.Int = 0;
@@ -2591,7 +2561,7 @@ public:
             {
                 Dest.Int = psTarget->SpawnID;
             }
-            Dest.Type = pIntType;
+            Dest.Type = mq::datatypes::pIntType;
             return true;
         case StickTargetName:
             strcpy_s(DataTypeTemp, "NONE");
@@ -2600,29 +2570,29 @@ public:
                 strcpy_s(DataTypeTemp, psTarget->DisplayedName);
             }
             Dest.Ptr  = &DataTypeTemp[0];
-            Dest.Type = pStringType;
+            Dest.Type = mq::datatypes::pStringType;
             return true;
         case DistMod:
             Dest.Float = STICK->DistMod;
-            Dest.Type  = pFloatType;
+            Dest.Type  = mq::datatypes::pFloatType;
             return true;
         case DistModPercent:
             Dest.Float = STICK->DistModP;
-            Dest.Type  = pFloatType;
+            Dest.Type  = mq::datatypes::pFloatType;
             return true;
         case Always:
             Dest.DWord = STICK->Always;
-            Dest.Type  = pBoolType;
+            Dest.Type  = mq::datatypes::pBoolType;
             return true;
         case Broken:
             Dest.DWord = pMU->StickBroke;
-            Dest.Type  = pBoolType;
+            Dest.Type  = mq::datatypes::pBoolType;
             return true;
         }
         return false;
     }
 
-    bool ToString(MQ2VARPTR VarPtr, char* Destination)
+    bool ToString(MQVarPtr VarPtr, char* Destination)
     {
 		strcpy_s(Destination, MAX_STRING, "OFF");
         if (PAUSE->PausedMU || PAUSE->PausedCmd)
@@ -2637,17 +2607,17 @@ public:
         return true;
     }
 
-    bool FromData(MQ2VARPTR &VarPtr, MQ2TYPEVAR &Source)
+    bool FromData(MQVarPtr &VarPtr, MQTypeVar &Source)
     {
         return false;
     }
-    bool FromString(MQ2VARPTR &VarPtr, char* Source)
+    bool FromString(MQVarPtr &VarPtr, char* Source)
     {
         return false;
     }
 };
 
-int dataStick(char* szName, MQ2TYPEVAR &Ret)
+bool dataStick(const char* szName, MQTypeVar &Ret)
 {
     Ret.DWord = 1;
     Ret.Type  = pStickType;
@@ -2681,15 +2651,15 @@ public:
         TypeMember(Broken);
     }
 
-    bool GetMember(MQ2VARPTR VarPtr, char* Member, char* Index, MQ2TYPEVAR &Dest)
+    bool GetMember(MQVarPtr VarPtr, char* Member, char* Index, MQTypeVar &Dest)
     {
-        PMQ2TYPEMEMBER pMember = MQ2MoveToType::FindMember(Member);
+        auto pMember = MQ2MoveToType::FindMember(Member);
         if (!pMember || !ValidIngame(false)) return false;
         switch((MoveToMembers)pMember->ID)
         {
         case Moving:
             Dest.DWord = MOVETO->On;
-            Dest.Type  = pBoolType;
+            Dest.Type  = mq::datatypes::pBoolType;
             return true;
         case Stopped:
             /*if (pLocalPlayer)
@@ -2697,7 +2667,7 @@ public:
                 Dest.DWord = (fabs(GetDistance(((PSPAWNINFO)pCharSpawn)->Y, ((PSPAWNINFO)pCharSpawn)->X, MOVETO->Y, MOVETO->X)) <= MOVETO->Dist) ? true : false;
             }*/
             Dest.DWord = pMU->StoppedMoveto;
-            Dest.Type  = pBoolType;
+            Dest.Type  = mq::datatypes::pBoolType;
             return true;
         case CampStopped:
             Dest.DWord = false;
@@ -2705,33 +2675,33 @@ public:
             {
                 Dest.DWord = (fabs(GetDistance(((PSPAWNINFO)pCharSpawn)->Y, ((PSPAWNINFO)pCharSpawn)->X, CAMP->Y, CAMP->X)) <= MOVETO->Dist) ? true : false;
             }
-            Dest.Type  = pBoolType;
+            Dest.Type  = mq::datatypes::pBoolType;
             return true;
         case UseWalk:
             Dest.DWord = MOVETO->Walk;
-            Dest.Type  = pBoolType;
+            Dest.Type  = mq::datatypes::pBoolType;
             return true;
         case ArrivalDist:
             Dest.Float = MOVETO->Dist;
-            Dest.Type  = pFloatType;
+            Dest.Type  = mq::datatypes::pFloatType;
             return true;
         case ArrivalDistY:
             Dest.Float = MOVETO->DistY;
-            Dest.Type  = pFloatType;
+            Dest.Type  = mq::datatypes::pFloatType;
             return true;
         case ArrivalDistX:
             Dest.Float = MOVETO->DistX;
-            Dest.Type  = pFloatType;
+            Dest.Type  = mq::datatypes::pFloatType;
             return true;
         case Broken:
             Dest.DWord = pMU->MovetoBroke;
-            Dest.Type  = pBoolType;
+            Dest.Type  = mq::datatypes::pBoolType;
             return true;
         }
         return false;
     }
 
-    bool ToString(MQ2VARPTR VarPtr, char* Destination)
+    bool ToString(MQVarPtr VarPtr, char* Destination)
     {
 		strcpy_s(Destination, MAX_STRING, "OFF");
         if (PAUSE->PausedMU || PAUSE->PausedCmd)
@@ -2746,17 +2716,17 @@ public:
         return true;
     }
 
-    bool FromData(MQ2VARPTR &VarPtr, MQ2TYPEVAR &Source)
+    bool FromData(MQVarPtr &VarPtr, MQTypeVar &Source)
     {
         return false;
     }
-    bool FromString(MQ2VARPTR &VarPtr, char* Source)
+    bool FromString(MQVarPtr &VarPtr, char* Source)
     {
         return false;
     }
 };
 
-int dataMoveTo(char* szName, MQ2TYPEVAR &Ret)
+bool dataMoveTo(const char* szName, MQTypeVar &Ret)
 {
     Ret.DWord = 1;
     Ret.Type  = pMoveToType;
@@ -2792,9 +2762,9 @@ public:
         TypeMember(Radius);
     }
 
-    bool GetMember(MQ2VARPTR VarPtr, char* Member, char* Index, MQ2TYPEVAR &Dest)
+    bool GetMember(MQVarPtr VarPtr, char* Member, char* Index, MQTypeVar &Dest)
     {
-        PMQ2TYPEMEMBER pMember = MQ2CircleType::FindMember(Member);
+        auto pMember = MQ2CircleType::FindMember(Member);
         if (!pMember || !ValidIngame(false)) return false;
         switch((CircleMembers)pMember->ID)
         {
@@ -2809,19 +2779,19 @@ public:
                 strcpy_s(DataTypeTemp, "ON");
             }
             Dest.Ptr  = &DataTypeTemp[0];
-            Dest.Type = pStringType;
+            Dest.Type = mq::datatypes::pStringType;
             return true;
         case CircleY:
             Dest.Float = CIRCLE->Y;
-            Dest.Type  = pFloatType;
+            Dest.Type  = mq::datatypes::pFloatType;
             return true;
         case CircleX:
             Dest.Float = CIRCLE->X;
-            Dest.Type = pFloatType;
+            Dest.Type = mq::datatypes::pFloatType;
             return true;
         case Drunken:
             Dest.DWord = CIRCLE->Drunk;
-            Dest.Type  = pBoolType;
+            Dest.Type  = mq::datatypes::pBoolType;
             return true;
         case Rotation:
             strcpy_s(DataTypeTemp, "CW");
@@ -2830,7 +2800,7 @@ public:
                 strcpy_s(DataTypeTemp, "CCW");
             }
             Dest.Ptr = &DataTypeTemp[0];
-            Dest.Type = pStringType;
+            Dest.Type = mq::datatypes::pStringType;
             return true;
         case Direction:
             strcpy_s(DataTypeTemp, "FORWARDS");
@@ -2839,25 +2809,25 @@ public:
                 strcpy_s(DataTypeTemp, "BACKWARDS");
             }
             Dest.Ptr  = &DataTypeTemp[0];
-            Dest.Type = pStringType;
+            Dest.Type = mq::datatypes::pStringType;
             return true;
         case Clockwise:
             Dest.DWord = !CIRCLE->CCW;
-            Dest.Type  = pBoolType;
+            Dest.Type  = mq::datatypes::pBoolType;
             return true;
         case Backwards:
             Dest.DWord = CIRCLE->Backward;
-            Dest.Type  = pBoolType;
+            Dest.Type  = mq::datatypes::pBoolType;
             return true;
         case Radius:
             Dest.Float = CIRCLE->Radius;
-            Dest.Type  = pFloatType;
+            Dest.Type  = mq::datatypes::pFloatType;
             return true;
         }
         return false;
     }
 
-    bool ToString(MQ2VARPTR VarPtr, char* Destination)
+    bool ToString(MQVarPtr VarPtr, char* Destination)
     {
 		strcpy_s(Destination, MAX_STRING, "OFF");
         if (PAUSE->PausedMU || PAUSE->PausedCmd)
@@ -2871,17 +2841,17 @@ public:
         return true;
     }
 
-    bool FromData(MQ2VARPTR &VarPtr, MQ2TYPEVAR &Source)
+    bool FromData(MQVarPtr &VarPtr, MQTypeVar &Source)
     {
         return false;
     }
-    bool FromString(MQ2VARPTR &VarPtr, char* Source)
+    bool FromString(MQVarPtr &VarPtr, char* Source)
     {
         return false;
     }
 };
 
-int dataCircling(char* szName, MQ2TYPEVAR &Ret)
+bool dataCircling(const char* szName, MQTypeVar &Ret)
 {
     Ret.DWord = 1;
     Ret.Type  = pCircleType;
@@ -2933,9 +2903,9 @@ public:
         TypeMember(GM);
     }
 
-    bool GetMember(MQ2VARPTR VarPtr, char* Member, char* Index, MQ2TYPEVAR &Dest)
+    bool GetMember(MQVarPtr VarPtr, char* Member, char* Index, MQTypeVar &Dest)
     {
-        PMQ2TYPEMEMBER pMember = MQ2MoveUtilsType::FindMember(Member);
+        auto pMember = MQ2MoveUtilsType::FindMember(Member);
         if (!pMember || !ValidIngame(false)) return false;
         switch((MoveUtilsMembers)pMember->ID)
         {
@@ -2958,7 +2928,7 @@ public:
                 strcpy_s(DataTypeTemp, "MAKECAMP");
             }
             Dest.Ptr  = &DataTypeTemp[0];
-            Dest.Type = pStringType;
+            Dest.Type = mq::datatypes::pStringType;
             return true;
         case Stuck:
             Dest.DWord = false;
@@ -2966,74 +2936,74 @@ public:
             {
                 Dest.DWord = true;
             }
-            Dest.Type = pBoolType;
+            Dest.Type = mq::datatypes::pBoolType;
             return true;
         case Summoned:
             Dest.DWord = pMU->BrokeSummon;
-            Dest.Type  = pBoolType;
+            Dest.Type  = mq::datatypes::pBoolType;
             return true;
         case StuckLogic:
             Dest.DWord = STUCK->On;
-            Dest.Type  = pBoolType;
+            Dest.Type  = mq::datatypes::pBoolType;
             return true;
         case Verbosity:
             Dest.DWord = (uiVerbLevel & V_VERBOSITY) == V_VERBOSITY ? true : false;
-            Dest.Type  = pBoolType;
+            Dest.Type  = mq::datatypes::pBoolType;
             return true;
         case FullVerbosity:
             Dest.DWord = (uiVerbLevel & V_FULLVERBOSITY) == V_FULLVERBOSITY ? true : false;
-            Dest.Type  = pBoolType;
+            Dest.Type  = mq::datatypes::pBoolType;
             return true;
         case TotalSilence:
             Dest.DWord = (uiVerbLevel == V_SILENCE) ? true : false;
-            Dest.Type  = pBoolType;
+            Dest.Type  = mq::datatypes::pBoolType;
             return true;
         case Aggro:
             Dest.DWord = pMU->Aggro;
-            Dest.Type  = pBoolType;
+            Dest.Type  = mq::datatypes::pBoolType;
             return true;
         case PauseMinDelay:
             Dest.Int  = PAUSE->Min;
-            Dest.Type = pIntType;
+            Dest.Type = mq::datatypes::pIntType;
             return true;
         case PauseMaxDelay:
             Dest.Int  = PAUSE->Max;
-            Dest.Type = pIntType;
+            Dest.Type = mq::datatypes::pIntType;
             return true;
         case PulseCheck:
             Dest.Int  = STUCK->Check;
-            Dest.Type = pIntType;
+            Dest.Type = mq::datatypes::pIntType;
             return true;
         case PulseUnstuck:
             Dest.Int  = STUCK->Unstuck;
-            Dest.Type = pIntType;
+            Dest.Type = mq::datatypes::pIntType;
             return true;
         case TryToJump:
             Dest.DWord = STUCK->Jump;
-            Dest.Type  = pBoolType;
+            Dest.Type  = mq::datatypes::pBoolType;
             return true;
         case DistStuck:
             Dest.Float = STUCK->Dist;
-            Dest.Type  = pFloatType;
+            Dest.Type  = mq::datatypes::pFloatType;
             return true;
         case Version:
-            sprintf_s(DataTypeTemp, "%1.4f", PLUGIN_VERS);
+            sprintf_s(DataTypeTemp, "%1.4f", MQ2Version);
             Dest.Ptr  = &DataTypeTemp[0];
-            Dest.Type = pStringType;
+            Dest.Type = mq::datatypes::pStringType;
             return true;
         case MovePause:
             Dest.DWord = SET->PauseKB;
-            Dest.Type  = pBoolType;
+            Dest.Type  = mq::datatypes::pBoolType;
             return true;
         case GM:
             Dest.DWord = pMU->BrokeGM;
-            Dest.Type  = pBoolType;
+            Dest.Type  = mq::datatypes::pBoolType;
             return true;
         }
         return false;
     }
 
-    bool ToString(MQ2VARPTR VarPtr, char* Destination)
+    bool ToString(MQVarPtr VarPtr, char* Destination)
     {
 		strcpy_s(Destination, MAX_STRING, "NONE");
         if (STICK->On)
@@ -3055,17 +3025,17 @@ public:
         return true;
     }
 
-    bool FromData(MQ2VARPTR &VarPtr, MQ2TYPEVAR &Source)
+    bool FromData(MQVarPtr &VarPtr, MQTypeVar &Source)
     {
         return false;
     }
-    bool FromString(MQ2VARPTR &VarPtr, char* Source)
+    bool FromString(MQVarPtr &VarPtr, char* Source)
     {
         return false;
     }
 };
 
-int dataMoveUtils(char* szName, MQ2TYPEVAR &Ret)
+bool dataMoveUtils(const char* szName, MQTypeVar &Ret)
 {
     Ret.DWord = 1;
     Ret.Type  = pMoveUtilsType;
@@ -3105,7 +3075,7 @@ void __stdcall CheckGates_Event(unsigned int ID, void *pData, PBLECHVALUE pValue
     PSPAWNINFO psTarget = (PSPAWNINFO)((STICK->Hold && STICK->HoldID) ? GetSpawnByID(STICK->HoldID) : pTarget);
     if (psTarget && pValues)
     {
-        if (!strcmp(pValues->Value, psTarget->DisplayedName))
+        if (pValues->Value == psTarget->DisplayedName)
         {
             EndPreviousCmd(true);
             sprintf_s(szMsg, "\ay%s\aw:: Mob gating ended previous command.", PLUGIN_NAME);
@@ -4711,7 +4681,7 @@ void CalcOurAngle(PSPAWNINFO pLPlayer, char* szLine)
     float fAngle   = MOVE->AngDist(psTarget->Heading, pChSpawn->Heading);
     float fReqHead = MOVE->SaneHead(atan2(psTarget->X - pChSpawn->X, psTarget->Y - pChSpawn->Y) * HEADING_HALF / (float)PI);
     fReqHead = pChSpawn->Heading - fReqHead;
-    float fMeleeRng = get_melee_range(pLocalPlayer, (EQPlayer *)psTarget);
+    float fMeleeRng = get_melee_range(pLocalPlayer, (PlayerClient*)psTarget);
     float fStickRng = fMeleeRng * STICK->DistModP + STICK->DistMod;
     float fSaneH = MOVE->SaneHead(fReqHead);
     float fDist   = GetDistance(pChSpawn, psTarget);
@@ -5628,7 +5598,7 @@ void MainProcess(unsigned char ucCmdUsed)
     // end /makecamp player handling
 
     // handle null pointers for all commands
-    if (!pChData || !pLPlayer || !pChSpawn->SpawnID || !GetCharInfo2())
+    if (!pChData || !pLPlayer || !pChSpawn->SpawnID || !GetPcProfile())
     {
         sprintf_s(szMsg, "\ay%s\aw:: Null pointer, turning off current command", PLUGIN_NAME);
         WriteLine(szMsg, V_SILENCE);
@@ -5718,7 +5688,7 @@ void MainProcess(unsigned char ucCmdUsed)
     {
         if (!STICK->SetDist)
         {
-            STICK->Dist    = (psTarget->StandState ? get_melee_range(pLocalPlayer, (EQPlayer *)psTarget) : 15.0f) * STICK->DistModP + STICK->DistMod;
+            STICK->Dist    = (psTarget->StandState ? get_melee_range(pLocalPlayer, (PlayerClient*)psTarget) : 15.0f) * STICK->DistModP + STICK->DistMod;
             STICK->SetDist = true;
         }
 
@@ -6076,8 +6046,8 @@ void MainProcess(unsigned char ucCmdUsed)
                 // try to jump early (but not 1-2pulse misfires) and again after a few seconds/turns
                 if (STUCK->Jump && !sbJumping && !bLevitated && !bSwimming && ((STUCK->StuckInc % 5) == 0))
                 {
-                    MQ2Globals::ExecuteCmd(iJumpKey, 1, 0);
-                    MQ2Globals::ExecuteCmd(iJumpKey, 0, 0);
+                    ExecuteCmd(iJumpKey, 1, 0);
+                    ExecuteCmd(iJumpKey, 0, 0);
                     sbJumping = true;
                 }
 
@@ -6566,7 +6536,7 @@ void OutputHelp(unsigned char ucCmdUsed, bool bOnlyCmdHelp)
     }
 
     char szTempOut[MAX_STRING] = {0};
-    sprintf_s(szTempOut, "\ay%s \agv%1.4f", PLUGIN_NAME, PLUGIN_VERS);
+    sprintf_s(szTempOut, "\ay%s \agv%1.4f", PLUGIN_NAME, MQ2Version);
     WriteLine(szTempOut, V_SILENCE);
 
     if (bDisplaySettings)
@@ -6747,7 +6717,7 @@ void DebugToWnd(unsigned char ucCmdUsed)
     char szDir[25]            = "\agNormal\ax";
     char szLongLine[48]       = "\ay---------------------------------------------";
 
-    sprintf_s(szTemp, "\ay%s v%1.4f - Current Status", PLUGIN_NAME, PLUGIN_VERS);
+    sprintf_s(szTemp, "\ay%s v%1.4f - Current Status", PLUGIN_NAME, MQ2Version);
     WriteLine(szTemp, V_SILENCE);
     if (ucCmdUsed == CMD_STICK || ucCmdUsed == APPLY_TO_ALL)
     {
@@ -6956,7 +6926,7 @@ void DebugToINI(unsigned char ucCmdUsed)
         break;
     }
 
-    sprintf_s(szTemp, "%s v%1.4f", PLUGIN_NAME, PLUGIN_VERS);
+    sprintf_s(szTemp, "%s v%1.4f", PLUGIN_NAME, MQ2Version);
     WritePrivateProfileString("Version",       "Number",                szTemp,                                     szDebugName);
     WritePrivateProfileString("Commands",      "CommandUsed",           szCommand,                                  szDebugName);
     WritePrivateProfileString("GenericBOOL",   "pMU->Keybinds",         pMU->Keybinds         ? "true" : "false",   szDebugName);
@@ -7877,37 +7847,37 @@ void KeybindPressed(int iKeyPressed, int iKeyDown)
     }
 }
 
-void FwdWrapper(char* szName, int iKeyDown)
+void FwdWrapper(const char* szName, bool iKeyDown)
 {
     KeybindPressed(iForward, iKeyDown);
 }
 
-void BckWrapper(char* szName, int iKeyDown)
+void BckWrapper(const char* szName, bool iKeyDown)
 {
     KeybindPressed(iBackward, iKeyDown);
 }
 
-void LftWrapper(char* szName, int iKeyDown)
+void LftWrapper(const char* szName, bool iKeyDown)
 {
     KeybindPressed(iTurnLeft, iKeyDown);
 }
 
-void RgtWrapper(char* szName, int iKeyDown)
+void RgtWrapper(const char* szName, bool iKeyDown)
 {
     KeybindPressed(iTurnRight, iKeyDown);
 }
 
-void StrafeLftWrapper(char* szName, int iKeyDown)
+void StrafeLftWrapper(const char* szName, bool iKeyDown)
 {
     KeybindPressed(iStrafeLeft, iKeyDown);
 }
 
-void StrafeRgtWrapper(char* szName, int iKeyDown)
+void StrafeRgtWrapper(const char* szName, bool iKeyDown)
 {
     KeybindPressed(iStrafeRight, iKeyDown);
 }
 
-void AutoRunWrapper(char* szName, int iKeyDown)
+void AutoRunWrapper(const char* szName, bool iKeyDown)
 {
     KeybindPressed(iAutoRun, iKeyDown);
 }
@@ -8046,17 +8016,6 @@ inline unsigned char FindPointers()
 }
 */
 
-PMQPLUGIN FindPlugin(char* PluginName)
-{
-    unsigned int uiLength = strlen(PluginName) + 1;
-    PMQPLUGIN pLook = pPlugins;
-    while (pLook && _strnicmp(PluginName, pLook->szFilename, uiLength))
-    {
-        pLook = pLook->pNext;
-    }
-    return pLook;
-}
-
 // ---------------------------------------------------------------------------
 // MQ2 Exported functions
 unsigned int __stdcall MQ2DataVariableLookup(char * VarName, char * Value,size_t ValueLen)
@@ -8105,7 +8064,7 @@ PLUGIN_API void InitializePlugin()
     srand((unsigned int)time(0));
 
     // setup global vars
-    sprintf_s(szDebugName, "%s\\MQ2MoveUtils-debug.ini", gszINIPath);
+    sprintf_s(szDebugName, "%s\\MQ2MoveUtils-debug.ini", gPathConfig);
 
     // instance classes
     ME     = new CMUCharacter();
@@ -8128,12 +8087,8 @@ PLUGIN_API void InitializePlugin()
     pMoveUtilsType = new MQ2MoveUtilsType;
 
     // setup mq2melee pointers
-    pbMULoaded = NULL;
-    if (PMQPLUGIN pLook = FindPlugin("mq2melee"))
-    {
-        pbMULoaded = (bool *)GetProcAddress(pLook->hModule, "bMULoaded");
-        if (pbMULoaded) *pbMULoaded = true;
-    }
+	if (pbMULoaded = (bool*)GetPluginProc("MQ2Melee", "bMULoaded"))
+		*pbMULoaded = true;
 }
 
 PLUGIN_API void ShutdownPlugin()
@@ -8168,12 +8123,8 @@ PLUGIN_API void ShutdownPlugin()
 		pMoveEvent = 0;
 	}
     // destroy mq2 melee linkage
-    pbMULoaded = NULL;
-    if (PMQPLUGIN pLook = FindPlugin("mq2melee"))
-    {
-        pbMULoaded = (bool *)GetProcAddress(pLook->hModule, "bMULoaded");
-        if (pbMULoaded) *pbMULoaded = false;
-    }
+	if (pbMULoaded = (bool*)GetPluginProc("MQ2Melee", "bMULoaded"))
+		*pbMULoaded = false;
 
     // destroy UI window
     WINDOW->Destroy(ValidIngame());
@@ -8272,7 +8223,7 @@ PLUGIN_API void OnAddSpawn(PSPAWNINFO pNewSpawn)
 
     if (pNewSpawn->GM)
     {
-        A_TIME_TYPE tCurrentTime;
+        __time64_t tCurrentTime;
         char szTime[30] = {0};
 		struct tm THE_TIME = { 0 };
 #ifdef OLD_COMPILER_USER
@@ -8306,7 +8257,7 @@ PLUGIN_API void OnRemoveSpawn(PSPAWNINFO pOldSpawn)
 
     if (pOldSpawn->GM && SET->BreakGM && pMU && pMU->BrokeGM)
     {
-        A_TIME_TYPE tCurrentTime;
+        __time64_t tCurrentTime;
         char szTime[30] = {0};
 		struct tm THE_TIME = { 0 };
 #ifdef OLD_COMPILER_USER
