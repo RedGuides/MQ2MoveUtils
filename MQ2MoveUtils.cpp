@@ -8152,7 +8152,6 @@ PLUGIN_API void SetGameState(unsigned long ulGameState)
     //DebugToDebugger("SetGameState %d", ulGameState);
     if (ulGameState == GAMESTATE_INGAME)
     {
-		
         sprintf_s(szCharName, "%s.%s", EQADDR_SERVERNAME, ((PCHARINFO)pCharData)->Name);
         FindKeys();
         if (!pMU->Keybinds)
