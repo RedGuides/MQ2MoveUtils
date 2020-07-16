@@ -2304,7 +2304,7 @@ public:
         TypeMember(ScatSize);
     }
 
-    bool GetMember(MQVarPtr VarPtr, char* Member, char* Index, MQTypeVar &Dest)
+    virtual bool GetMember(MQVarPtr VarPtr, const char* Member, char* Index, MQTypeVar &Dest) override
     {
         auto pMember = MQ2MakeCampType::FindMember(Member);
         if (!pMember || !ValidIngame(false)) return false;
@@ -2435,7 +2435,7 @@ public:
     {
         return false;
     }
-    bool FromString(MQVarPtr &VarPtr, char* Source)
+    virtual bool FromString(MQVarPtr &VarPtr, const char* Source) override
     {
         return false;
     }
@@ -2491,7 +2491,7 @@ public:
         TypeMember(Broken);
     }
 
-    bool GetMember(MQVarPtr VarPtr, char* Member, char* Index, MQTypeVar &Dest)
+    virtual bool GetMember(MQVarPtr VarPtr, const char* Member, char* Index, MQTypeVar &Dest) override
     {
         auto pMember = MQ2StickType::FindMember(Member);
         if (!pMember || !ValidIngame(false)) return false;
@@ -2611,7 +2611,7 @@ public:
     {
         return false;
     }
-    bool FromString(MQVarPtr &VarPtr, char* Source)
+    virtual bool FromString(MQVarPtr &VarPtr, const char* Source) override
     {
         return false;
     }
@@ -2651,7 +2651,7 @@ public:
         TypeMember(Broken);
     }
 
-    bool GetMember(MQVarPtr VarPtr, char* Member, char* Index, MQTypeVar &Dest)
+    virtual bool GetMember(MQVarPtr VarPtr, const char* Member, char* Index, MQTypeVar &Dest) override
     {
         auto pMember = MQ2MoveToType::FindMember(Member);
         if (!pMember || !ValidIngame(false)) return false;
@@ -2720,7 +2720,7 @@ public:
     {
         return false;
     }
-    bool FromString(MQVarPtr &VarPtr, char* Source)
+    virtual bool FromString(MQVarPtr &VarPtr, const char* Source) override
     {
         return false;
     }
@@ -2762,7 +2762,7 @@ public:
         TypeMember(Radius);
     }
 
-    bool GetMember(MQVarPtr VarPtr, char* Member, char* Index, MQTypeVar &Dest)
+    virtual bool GetMember(MQVarPtr VarPtr, const char* Member, char* Index, MQTypeVar &Dest) override
     {
         auto pMember = MQ2CircleType::FindMember(Member);
         if (!pMember || !ValidIngame(false)) return false;
@@ -2845,7 +2845,7 @@ public:
     {
         return false;
     }
-    bool FromString(MQVarPtr &VarPtr, char* Source)
+    virtual bool FromString(MQVarPtr &VarPtr, const char* Source) override
     {
         return false;
     }
@@ -2903,7 +2903,7 @@ public:
         TypeMember(GM);
     }
 
-    bool GetMember(MQVarPtr VarPtr, char* Member, char* Index, MQTypeVar &Dest)
+    virtual bool GetMember(MQVarPtr VarPtr, const char* Member, char* Index, MQTypeVar &Dest) override
     {
         auto pMember = MQ2MoveUtilsType::FindMember(Member);
         if (!pMember || !ValidIngame(false)) return false;
@@ -3029,7 +3029,7 @@ public:
     {
         return false;
     }
-    bool FromString(MQVarPtr &VarPtr, char* Source)
+    virtual bool FromString(MQVarPtr &VarPtr, const char* Source) override
     {
         return false;
     }
