@@ -1,9 +1,9 @@
 /***** NOTICE ******
-Many functions included in this source code are not copyrighted to the developer and are used with permissions 
-restricting their release to VIP board members of MacroQuest2.com. These functions have comments above them stating 
-to whom the copyright belongs to. If you intend to redistribute this source or binaries compiled from this source 
-outside of a direct link to the forum post in which it is released, you must get permission from these authors. Otherwise 
-link to the forum post directly to encourage any users of this plugin to donate to the developers at MacroQuest2.com 
+Many functions included in this source code are not copyrighted to the developer and are used with permissions
+restricting their release to VIP board members of MacroQuest2.com. These functions have comments above them stating
+to whom the copyright belongs to. If you intend to redistribute this source or binaries compiled from this source
+outside of a direct link to the forum post in which it is released, you must get permission from these authors. Otherwise
+link to the forum post directly to encourage any users of this plugin to donate to the developers at MacroQuest2.com
 as required by the copyright holders of these functions, and desired by the developer. Please show your support!
 ****************/
 // version information
@@ -18,7 +18,7 @@ as required by the copyright holders of these functions, and desired by the deve
 #include <cmath>
 
 constexpr auto PLUGIN_NAME = "MQ2MoveUtils";
-PLUGIN_VERSION(12.4);
+PLUGIN_VERSION(12.5);
 
 PreSetup(PLUGIN_NAME);
 
@@ -3920,12 +3920,12 @@ void HandleOurCmd(unsigned char ucCmdUsed, char* szInput)
                     uiArgNum++;
                     STICK->Snap->Bearing = 1.0f;
                 }
-                else if (!_strnicmp(szCurrentArg, "left", 5))
+                else if (!_strnicmp(szCurrentArg, "right", 6))
                 {
                     uiArgNum++;
                     STICK->Snap->Bearing = HEADING_QUARTER;
                 }
-                else if (!_strnicmp(szCurrentArg, "right", 6))
+                else if (!_strnicmp(szCurrentArg, "left", 5))
                 {
                     uiArgNum++;
                     STICK->Snap->Bearing = (HEADING_HALF + HEADING_QUARTER);
@@ -4567,11 +4567,11 @@ void HandleOurCmd(unsigned char ucCmdUsed, char* szInput)
         {
             sprintf_s(szDir, "\ayBehind\ax");
         }
-        else if (STICK->Pin) 
+        else if (STICK->Pin)
         {
             sprintf_s(szDir, "\aySide\ax");
         }
-        else if (STICK->NotFront) 
+        else if (STICK->NotFront)
         {
             sprintf_s(szDir, "\ayNot Front\ax");
         }
@@ -6725,11 +6725,11 @@ void DebugToWnd(unsigned char ucCmdUsed)
         {
             sprintf_s(szDir, "\agBehind\ax");
         }
-        else if (STICK->Pin) 
+        else if (STICK->Pin)
         {
             sprintf_s(szDir, "\agSide\ax");
         }
-        else if (STICK->NotFront) 
+        else if (STICK->NotFront)
         {
             sprintf_s(szDir, "\agNot Front\ax");
         }

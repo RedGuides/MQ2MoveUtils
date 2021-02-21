@@ -51,8 +51,8 @@ END
 //
 
 VS_VERSION_INFO VERSIONINFO
- FILEVERSION 12,4
- PRODUCTVERSION 12,4
+ FILEVERSION 12,5
+ PRODUCTVERSION 12,5
  FILEFLAGSMASK 0x3fL
 #ifdef _DEBUG
  FILEFLAGS 0x1L
@@ -73,11 +73,11 @@ BEGIN
 #else
             VALUE "FileDescription", "MQ2MoveUtils Release Version"
 #endif
-            VALUE "FileVersion", "12.4"
+            VALUE "FileVersion", "12.5"
             VALUE "InternalName", "MQ2MoveUtils.dll"
             VALUE "OriginalFilename", "MQ2MoveUtils.dll"
             VALUE "ProductName", "MQ2MoveUtils"
-            VALUE "ProductVersion", "12.4"
+            VALUE "ProductVersion", "12.5"
         END
     END
     BLOCK "VarFileInfo"
