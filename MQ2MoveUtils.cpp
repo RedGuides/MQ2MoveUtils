@@ -2417,7 +2417,7 @@ public:
         return false;
     }
 
-    bool ToString(MQVarPtr VarPtr, char* Destination)
+    bool ToString(MQVarPtr VarPtr, char* Destination) override
     {
 		strcpy_s(Destination, MAX_STRING, "OFF");
         if (PAUSE->PausedMU || PAUSE->PausedCmd)
@@ -2429,15 +2429,6 @@ public:
 			strcpy_s(Destination, MAX_STRING, "ON");
         }
         return true;
-    }
-
-    bool FromData(MQVarPtr &VarPtr, MQTypeVar &Source)
-    {
-        return false;
-    }
-    virtual bool FromString(MQVarPtr &VarPtr, const char* Source) override
-    {
-        return false;
     }
 };
 
@@ -2592,7 +2583,7 @@ public:
         return false;
     }
 
-    bool ToString(MQVarPtr VarPtr, char* Destination)
+    bool ToString(MQVarPtr VarPtr, char* Destination) override
     {
 		strcpy_s(Destination, MAX_STRING, "OFF");
         if (PAUSE->PausedMU || PAUSE->PausedCmd)
@@ -2605,15 +2596,6 @@ public:
         }
 
         return true;
-    }
-
-    bool FromData(MQVarPtr &VarPtr, MQTypeVar &Source)
-    {
-        return false;
-    }
-    virtual bool FromString(MQVarPtr &VarPtr, const char* Source) override
-    {
-        return false;
     }
 };
 
@@ -2701,7 +2683,7 @@ public:
         return false;
     }
 
-    bool ToString(MQVarPtr VarPtr, char* Destination)
+    virtual bool ToString(MQVarPtr VarPtr, char* Destination) override
     {
 		strcpy_s(Destination, MAX_STRING, "OFF");
         if (PAUSE->PausedMU || PAUSE->PausedCmd)
@@ -2714,15 +2696,6 @@ public:
         }
 
         return true;
-    }
-
-    bool FromData(MQVarPtr &VarPtr, MQTypeVar &Source)
-    {
-        return false;
-    }
-    virtual bool FromString(MQVarPtr &VarPtr, const char* Source) override
-    {
-        return false;
     }
 };
 
@@ -2827,7 +2800,7 @@ public:
         return false;
     }
 
-    bool ToString(MQVarPtr VarPtr, char* Destination)
+    virtual bool ToString(MQVarPtr VarPtr, char* Destination) override
     {
 		strcpy_s(Destination, MAX_STRING, "OFF");
         if (PAUSE->PausedMU || PAUSE->PausedCmd)
@@ -2839,15 +2812,6 @@ public:
 			strcpy_s(Destination, MAX_STRING, "ON");
         }
         return true;
-    }
-
-    bool FromData(MQVarPtr &VarPtr, MQTypeVar &Source)
-    {
-        return false;
-    }
-    virtual bool FromString(MQVarPtr &VarPtr, const char* Source) override
-    {
-        return false;
     }
 };
 
@@ -3003,7 +2967,7 @@ public:
         return false;
     }
 
-    bool ToString(MQVarPtr VarPtr, char* Destination)
+    virtual bool ToString(MQVarPtr VarPtr, char* Destination) override
     {
 		strcpy_s(Destination, MAX_STRING, "NONE");
         if (STICK->On)
@@ -3023,15 +2987,6 @@ public:
             strcpy_s(Destination,MAX_STRING, "MAKECAMP");
         }
         return true;
-    }
-
-    bool FromData(MQVarPtr &VarPtr, MQTypeVar &Source)
-    {
-        return false;
-    }
-    virtual bool FromString(MQVarPtr &VarPtr, const char* Source) override
-    {
-        return false;
     }
 };
 
