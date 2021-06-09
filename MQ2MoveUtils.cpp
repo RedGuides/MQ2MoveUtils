@@ -205,28 +205,6 @@ int iJumpKey     = NULL;
 int iRunWalk     = NULL;
 int iDuckKey     = NULL;
 
-/*
-char* szFailedLoad[] = {
-    "No Error",            // 0
-    "TurnRight Address",   // 1
-    "TurnRight",           // 2
-    "StafeLeft",           // 3
-    "StrafeRight",         // 4
-    "AutoRun",             // 5
-    "TurnLeft",            // 6
-    "MoveForward Address", // 7
-    "Forward",             // 8
-    "AutoRun Mismatch",    // 9
-    "Backward"             // 10
-};
-unsigned long addrTurnRight     = NULL;
-unsigned long addrMoveForward   = NULL;
-PBYTE patternTurnRight = (PBYTE)"\xA3\x00\x00\x00\x00\xC7\x05\x00\x00\x00\x00\x00\x00\x00\x00\xC7\x05\x00\x00\x00\x00\x00\x00\x00\x00\x85\xC0\x0F\x84";
-char maskTurnRight[] = "x????xx????????xx????????xxxx";
-PBYTE patternMoveForward = (PBYTE)"\xA3\x00\x00\x00\x00\x85\xC0\x0F\x84\x00\x00\x00\x00\xA0\x00\x00\x00\x00\x24\x03\xC7\x05\x00\x00\x00\x00\x00\x00\x00\x00\x0F\xBE\xC0\xF7\xD8\xC7\x05";
-char maskMoveForward[] = "x????xxxx????x????xxxx????????xxxxxxx";
-*/
-bool bOffsetOverride = false;
 // ----------------------------------------
 // function prototypes
 
@@ -1463,16 +1441,17 @@ public:
     void DoRoot()
     {
         // turns '/rootme' on
-        if (!pMU->Rooted || !ValidIngame()) return;
+        if (!pMU->Rooted || !ValidIngame())
+			return;
 
-        if (SET->WinEQ || bOffsetOverride)
+        if (SET->WinEQ)
         {
             StopRoot();
             return;
         }
         ChangeHead = H_INACTIVE;
-        ((PSPAWNINFO)pCharSpawn)->Heading          = RootHead;
-        ((PSPAWNINFO)pCharSpawn)->SpeedHeading     = 0.0f;
+        pLocalPlayer->Heading                      = RootHead;
+        pLocalPlayer->SpeedHeading                 = 0.0f;
         pKeypressHandler->CommandState[iTurnLeft]  = 0;
         *pulTurnLeft                               = 0;
         pKeypressHandler->CommandState[iTurnRight] = 0;
@@ -1482,7 +1461,8 @@ public:
 
     void StopRoot()
     {
-        if (!pMU->Rooted) return;
+        if (!pMU->Rooted)
+			return;
         // turns '/rootme' off
         pMU->Rooted = false;
         RootHead    = 0.0f;
@@ -1602,7 +1582,7 @@ public:
     {
         // wrapper for stopping movement
         // old or new style support handled by the class instead of function
-        if (SET->WinEQ || bOffsetOverride)
+        if (SET->WinEQ)
         {
             SimMoveOff(ucDirection);
             return;
@@ -1656,7 +1636,7 @@ private:
             LooseTurn(fHeading);
             break;
         case H_TRUE:
-            if (bOffsetOverride || SET->WinEQ)
+            if (SET->WinEQ)
             {
                 LooseTurn(fHeading);
                 break;
@@ -1934,7 +1914,7 @@ void CMUMovement::DoMove(unsigned char ucDirection, bool bTurnOn, unsigned char 
         break;
     }
 
-    if (SET->WinEQ || bOffsetOverride)
+    if (SET->WinEQ)
     {
         if (bTurnOn)
         {
@@ -4654,7 +4634,7 @@ void RootCmd(PSPAWNINFO pLPlayer, char* szLine)
     if (!ValidIngame()) return;
     char szTempOut[MAX_STRING] = {0};
 
-    if (SET->WinEQ || bOffsetOverride)
+    if (SET->WinEQ)
     {
         sprintf_s(szTempOut, "\ay%s\aw:: \arUnable to use this command due to use of old movement type.", PLUGIN_NAME);
         WriteLine(szTempOut, V_SILENCE);
@@ -7717,8 +7697,8 @@ inline void KeyKiller(int iKeyPressed)
         MOVE->ChangeHead = H_INACTIVE;
         if (pMU->Head == H_TRUE)
         {
-           *pulTurnLeft                              = 0;
-           pKeypressHandler->CommandState[iTurnLeft] = 0;
+			*pulTurnLeft                              = 0;
+			pKeypressHandler->CommandState[iTurnLeft] = 0;
         }
         return; // return so that we do not auto heading adjust via StopHeading()
     }
@@ -7728,8 +7708,8 @@ inline void KeyKiller(int iKeyPressed)
         MOVE->ChangeHead = H_INACTIVE;
         if (pMU->Head == H_TRUE)
         {
-           *pulTurnRight                              = 0;
-           pKeypressHandler->CommandState[iTurnRight] = 0;
+			*pulTurnRight                              = 0;
+			pKeypressHandler->CommandState[iTurnRight] = 0;
         }
         return; // return so that we do not auto heading adjust via StopHeading()
     }
@@ -7738,7 +7718,8 @@ inline void KeyKiller(int iKeyPressed)
 
 void KeybindPressed(int iKeyPressed, int iKeyDown)
 {
-    if (!ValidIngame(false)) return;
+    if (!ValidIngame(false))
+		return;
 
     if (pMU->Rooted)
     {
@@ -7764,7 +7745,7 @@ void KeybindPressed(int iKeyPressed, int iKeyDown)
                 EndPreviousCmd(false);
             }
             PAUSE->PausedMU = true;
-            if (!pMU->KeyKilled && !SET->WinEQ && !bOffsetOverride)
+            if (!pMU->KeyKilled && !SET->WinEQ)
             {
                 KeyKiller(iKeyPressed);
                 pMU->KeyKilled = true;
@@ -7778,7 +7759,7 @@ void KeybindPressed(int iKeyPressed, int iKeyDown)
                 WriteLine(szMsg, V_MOVEPAUSE);
             }
             EndPreviousCmd(false); //EndPreviousCmd(true); // this stops kb input
-            if (!pMU->KeyKilled && !SET->WinEQ && !bOffsetOverride)
+            if (!pMU->KeyKilled && !SET->WinEQ)
             {
                 KeyKiller(iKeyPressed);
                 pMU->KeyKilled = true;
@@ -7787,7 +7768,7 @@ void KeybindPressed(int iKeyPressed, int iKeyDown)
     }
     else
     {
-        if (!SET->WinEQ && !bOffsetOverride)
+        if (!SET->WinEQ)
         {
             if (*pulForward || *pulBackward || *pulTurnLeft || *pulTurnRight || *pulStrafeLeft || *pulStrafeRight || *pulAutoRun)
             {
@@ -7985,21 +7966,6 @@ PLUGIN_API void InitializePlugin()
 {
 	pMoveEvent = new Blech('#','|',MQ2DataVariableLookup);
 
-    // offset-driven movement
-	/*
-    unsigned char ucFailedLoad = FindPointers();
-    if (ucFailedLoad)
-    {
-        char szFailOffset[500] = {0};
-        sprintf_s(szFailOffset, "\ay%s\aw:: Couldn't find movement pointer: \ar%s\ax.", PLUGIN_NAME, szFailedLoad[ucFailedLoad]);
-        WriteChatf("%s", szFailOffset);
-        //MessageBox(NULL, szFailOffset, "MQ2MoveUtils v11.x", MB_OK);
-        bOffsetOverride = true;
-    }
-
-	DebugSpewAlways("%s::addrTurnRight = 0x%x", PLUGIN_NAME, addrTurnRight);
-	DebugSpewAlways("%s::addrMoveForward = 0x%x", PLUGIN_NAME, addrMoveForward);
-	*/
 	pulAutoRun = (unsigned long *)FixOffset(__pulAutoRun_x);
 	pulForward = (unsigned long *)FixOffset(__pulForward_x);
 	pulBackward = (unsigned long *)FixOffset(__pulBackward_x);
@@ -8259,7 +8225,8 @@ PLUGIN_API void OnPulse()
     // MoveUtils.Aggro TLO
     pMU->AggroTLO();
     // check BreakOnSummon and BreakOnGM
-    if (pMU->Broken()) return;
+    if (pMU->Broken())
+		return;
     // rootme command
     MOVE->DoRoot();
     // handle mousepause & movepause timers
