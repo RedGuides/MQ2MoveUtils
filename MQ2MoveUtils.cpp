@@ -7958,9 +7958,9 @@ unsigned int __stdcall MQ2DataVariableLookup(char * VarName, char * Value,size_t
 {
 	strcpy_s(Value, ValueLen, VarName);
 	if (PCHARINFO pChar = GetCharInfo()) {
-		return strlen(ParseMacroParameter(pChar->pSpawn, Value, ValueLen));
+		return (unsigned int)strlen(ParseMacroParameter(pChar->pSpawn, Value, ValueLen));
 	}
-	return strlen(Value);
+	return (unsigned int)strlen(Value);
 }
 PLUGIN_API void InitializePlugin()
 {
@@ -8064,9 +8064,9 @@ unsigned int __stdcall MQ2DataVariableLookup2(char * VarName, char * Value,size_
 {
 	strcpy_s(Value, ValueLen, VarName);
 	if (PCHARINFO pChar = GetCharInfo()) {
-		return strlen(ParseMacroParameter(pChar->pSpawn, Value, ValueLen));
+		return (unsigned int)strlen(ParseMacroParameter(pChar->pSpawn, Value, ValueLen));
 	}
-	return strlen(Value);
+	return (unsigned int)strlen(Value);
 }
 PLUGIN_API void SetGameState(unsigned long ulGameState)
 {
