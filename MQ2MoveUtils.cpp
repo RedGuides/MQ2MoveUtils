@@ -184,28 +184,6 @@ unsigned int Event_MissNumOnly = NULL;
 unsigned int Event_Gates       = NULL;
 
 // ----------------------------------------
-// key IDs & pointers
-
-int iAutoRun           = NULL;
-uint8_t* pbAutoRun     = NULL;
-int iForward           = NULL;
-uint8_t* pbForward     = NULL;
-int iBackward          = NULL;
-uint8_t* pbBackward    = NULL;
-int iTurnLeft          = NULL;
-uint8_t* pbTurnLeft    = NULL;
-int iTurnRight         = NULL;
-uint8_t* pbTurnRight   = NULL;
-int iStrafeLeft        = NULL;
-uint8_t* pbStrafeLeft  = NULL;
-int iStrafeRight       = NULL;
-uint8_t* pbStrafeRight = NULL;
-
-int iJumpKey     = NULL;
-int iRunWalk     = NULL;
-int iDuckKey     = NULL;
-
-// ----------------------------------------
 // function prototypes
 
 void SpewMUError(unsigned char ucErrorNum);
@@ -1442,7 +1420,7 @@ public:
     {
         // turns '/rootme' on
         if (!pMU->Rooted || !ValidIngame())
-			return;
+            return;
 
         if (SET->WinEQ)
         {
@@ -1450,19 +1428,19 @@ public:
             return;
         }
         ChangeHead = H_INACTIVE;
-        pLocalPlayer->Heading                      = RootHead;
-        pLocalPlayer->SpeedHeading                 = 0.0f;
-        pKeypressHandler->CommandState[iTurnLeft]  = 0;
-        *pbTurnLeft                               = 0;
-        pKeypressHandler->CommandState[iTurnRight] = 0;
-        *pbTurnRight                              = 0;
+        pLocalPlayer->Heading = RootHead;
+        pLocalPlayer->SpeedHeading = 0.0f;
+        pKeypressHandler->CommandState[CMD_LEFT] = 0;
+        pEverQuestInfo->keyDown[CMD_LEFT] = 0;
+        pKeypressHandler->CommandState[CMD_RIGHT] = 0;
+        pEverQuestInfo->keyDown[CMD_RIGHT] = 0;
         TrueMoveOff(APPLY_TO_ALL);
     };
 
     void StopRoot()
     {
         if (!pMU->Rooted)
-			return;
+            return;
         // turns '/rootme' off
         pMU->Rooted = false;
         RootHead    = 0.0f;
@@ -1512,18 +1490,17 @@ public:
     {
         // turns walking on or off when desired (if appropriate)
         if (!ValidIngame()) return; // ExecuteCmd in any other state = CTD
-        PSPAWNINFO pChSpawn = (PSPAWNINFO)pCharSpawn;
 
         bool bWalking = (*EQADDR_RUNWALKSTATE) ? false : true;
-        if (pChSpawn->SpeedMultiplier < 0.0f || pChSpawn->RunSpeed < 0.0f)
+        if (pCharSpawn->SpeedMultiplier < 0.0f || pCharSpawn->RunSpeed < 0.0f)
         {
             //if negative speed, we are snared, and do not want walk on
             bWalkOn = false;
         }
         if (bWalkOn != bWalking)
         {
-            ExecuteCmd(iRunWalk, 1, 0);
-            ExecuteCmd(iRunWalk, 0, 0);
+            ExecuteCmd(CMD_RUN_WALK, 1, 0);
+            ExecuteCmd(CMD_RUN_WALK, 0, 0);
         }
     };
 
@@ -1692,13 +1669,13 @@ private:
         PSPAWNINFO pChSpawn = (PSPAWNINFO)pCharSpawn;
         if (fabs(pChSpawn->Heading - fNewHead) < 14.0f)
         {
-            pKeypressHandler->CommandState[iTurnLeft]  = 0;
-            *pbTurnLeft                               = 0;
-            pKeypressHandler->CommandState[iTurnRight] = 0;
-            *pbTurnRight                              = 0;
-            pChSpawn->Heading                          = fNewHead;
-            pChSpawn->SpeedHeading                     = 0.0f;
-            ChangeHead                                 = H_INACTIVE;
+            pKeypressHandler->CommandState[CMD_LEFT] = 0;
+            pEverQuestInfo->keyDown[CMD_LEFT] = 0;
+            pKeypressHandler->CommandState[CMD_RIGHT] = 0;
+            pEverQuestInfo->keyDown[CMD_RIGHT] = 0;
+            pChSpawn->Heading = fNewHead;
+            pChSpawn->SpeedHeading = 0.0f;
+            ChangeHead = H_INACTIVE;
         }
         else
         {
@@ -1707,17 +1684,17 @@ private:
             if (fNewHead < pChSpawn->Heading) fNewHead += HEADING_MAX;
             if (fNewHead < fCompHead)
             {
-                pKeypressHandler->CommandState[iTurnRight] = 0;
-                *pbTurnRight                              = 0;
-                pKeypressHandler->CommandState[iTurnLeft]  = 1;
-                *pbTurnLeft                               = 1;
+                pKeypressHandler->CommandState[CMD_RIGHT] = 0;
+                pEverQuestInfo->keyDown[CMD_RIGHT] = 0;
+                pKeypressHandler->CommandState[CMD_LEFT]  = 1;
+                pEverQuestInfo->keyDown[CMD_LEFT] = 1;
             }
             else
             {
-                pKeypressHandler->CommandState[iTurnLeft]  = 0;
-                *pbTurnLeft                               = 0;
-                pKeypressHandler->CommandState[iTurnRight] = 1;
-                *pbTurnRight                              = 1;
+                pKeypressHandler->CommandState[CMD_LEFT]  = 0;
+                pEverQuestInfo->keyDown[CMD_LEFT] = 0;
+                pKeypressHandler->CommandState[CMD_RIGHT] = 1;
+                pEverQuestInfo->keyDown[CMD_RIGHT] = 1;
             }
         }
     };
@@ -1727,40 +1704,40 @@ private:
         switch(ucDirection)
         {
         case GO_FORWARD:
-            pMU->CmdFwd                               = true;
-            pKeypressHandler->CommandState[iAutoRun]  = 0;
-            *pbAutoRun                                = 0;
-            pKeypressHandler->CommandState[iBackward] = 0;
-            *pbBackward                               = 0;
-            pKeypressHandler->CommandState[iForward]  = 1;
-            *pbForward                                = 1;
+            pMU->CmdFwd = true;
+            pKeypressHandler->CommandState[CMD_AUTORUN] = 0;
+            pEverQuestInfo->AutoRun = 0;
+            pKeypressHandler->CommandState[CMD_BACK] = 0;
+            pEverQuestInfo->keyDown[CMD_BACK] = 0;
+            pKeypressHandler->CommandState[CMD_FORWARD] = 1;
+            pEverQuestInfo->keyDown[CMD_FORWARD] = 1;
             break;
         case GO_BACKWARD:
-            pMU->CmdFwd                               = false;
-            pKeypressHandler->CommandState[iAutoRun]  = 0;
-            *pbAutoRun                                = 0;
-            pKeypressHandler->CommandState[iForward]  = 0;
-            *pbForward                                = 0;
-            pKeypressHandler->CommandState[iBackward] = 1;
-            *pbBackward                               = 1;
+            pMU->CmdFwd = false;
+            pKeypressHandler->CommandState[CMD_AUTORUN] = 0;
+            pEverQuestInfo->AutoRun = 0;
+            pKeypressHandler->CommandState[CMD_FORWARD] = 0;
+            pEverQuestInfo->keyDown[CMD_FORWARD] = 0;
+            pKeypressHandler->CommandState[CMD_BACK] = 1;
+            pEverQuestInfo->keyDown[CMD_BACK] = 1;
             break;
         case GO_LEFT:
-            pMU->CmdStrafe                               = true;
-            pKeypressHandler->CommandState[iAutoRun]     = 0;
-            *pbAutoRun                                   = 0;
-            pKeypressHandler->CommandState[iStrafeRight] = 0;
-            *pbStrafeRight                               = 0;
-            pKeypressHandler->CommandState[iStrafeLeft]  = 1;
-            *pbStrafeLeft                                = 1;
+            pMU->CmdStrafe = true;
+            pKeypressHandler->CommandState[CMD_AUTORUN] = 0;
+            pEverQuestInfo->AutoRun = 0;
+            pKeypressHandler->CommandState[CMD_STRAFE_RIGHT] = 0;
+            pEverQuestInfo->keyDown[CMD_STRAFE_RIGHT] = 0;
+            pKeypressHandler->CommandState[CMD_STRAFE_LEFT] = 1;
+            pEverQuestInfo->keyDown[CMD_STRAFE_LEFT] = 1;
             break;
         case GO_RIGHT:
-            pMU->CmdStrafe                               = true;
-            pKeypressHandler->CommandState[iAutoRun]     = 0;
-            *pbAutoRun                                   = 0;
-            pKeypressHandler->CommandState[iStrafeLeft]  = 0;
-            *pbStrafeLeft                                = 0;
-            pKeypressHandler->CommandState[iStrafeRight] = 1;
-            *pbStrafeRight                               = 1;
+            pMU->CmdStrafe = true;
+            pKeypressHandler->CommandState[CMD_AUTORUN] = 0;
+            pEverQuestInfo->AutoRun = 0;
+            pKeypressHandler->CommandState[CMD_STRAFE_LEFT] = 0;
+            pEverQuestInfo->keyDown[CMD_STRAFE_LEFT] = 0;
+            pKeypressHandler->CommandState[CMD_STRAFE_RIGHT] = 1;
+            pEverQuestInfo->keyDown[CMD_STRAFE_RIGHT] = 1;
             break;
         }
     };
@@ -1770,65 +1747,65 @@ private:
         switch(ucDirection)
         {
         case APPLY_TO_ALL:
-            pKeypressHandler->CommandState[iAutoRun]     = 0;
-            *pbAutoRun                                   = 0;
-            pKeypressHandler->CommandState[iStrafeLeft]  = 0;
-            *pbStrafeLeft                                = 0;
-            pKeypressHandler->CommandState[iStrafeRight] = 0;
-            *pbStrafeRight                               = 0;
-            pKeypressHandler->CommandState[iForward]     = 0;
-            *pbForward                                   = 0;
-            pKeypressHandler->CommandState[iBackward]    = 0;
-            *pbBackward                                  = 0;
-            pMU->CmdFwd = pMU->CmdStrafe                 = false;
+            pKeypressHandler->CommandState[CMD_AUTORUN] = 0;
+            pEverQuestInfo->AutoRun = 0;
+            pKeypressHandler->CommandState[CMD_STRAFE_LEFT]  = 0;
+            pEverQuestInfo->keyDown[CMD_STRAFE_LEFT] = 0;
+            pKeypressHandler->CommandState[CMD_STRAFE_RIGHT] = 0;
+            pEverQuestInfo->keyDown[CMD_STRAFE_RIGHT] = 0;
+            pKeypressHandler->CommandState[CMD_FORWARD] = 0;
+            pEverQuestInfo->keyDown[CMD_FORWARD] = 0;
+            pKeypressHandler->CommandState[CMD_BACK] = 0;
+            pEverQuestInfo->keyDown[CMD_BACK] = 0;
+            pMU->CmdFwd = pMU->CmdStrafe = false;
             STICK->TimeStop();
             break;
         case GO_FORWARD:
-            pKeypressHandler->CommandState[iAutoRun] = 0;
-            *pbAutoRun                               = 0;
-            pKeypressHandler->CommandState[iForward] = 0;
-            *pbForward                               = 0;
-            pMU->CmdFwd                              = false;
+            pKeypressHandler->CommandState[CMD_AUTORUN] = 0;
+            pEverQuestInfo->AutoRun = 0;
+            pKeypressHandler->CommandState[CMD_FORWARD] = 0;
+            pEverQuestInfo->keyDown[CMD_FORWARD] = 0;
+            pMU->CmdFwd = false;
             break;
         case GO_BACKWARD:
-            pKeypressHandler->CommandState[iAutoRun]  = 0;
-            *pbAutoRun                                = 0;
-            pKeypressHandler->CommandState[iBackward] = 0;
-            *pbBackward                               = 0;
-            pMU->CmdFwd                               = false;
+            pKeypressHandler->CommandState[CMD_AUTORUN] = 0;
+            pEverQuestInfo->AutoRun = 0;
+            pKeypressHandler->CommandState[CMD_BACK] = 0;
+            pEverQuestInfo->keyDown[CMD_BACK] = 0;
+            pMU->CmdFwd = false;
             break;
         case GO_LEFT:
-            pKeypressHandler->CommandState[iAutoRun]    = 0;
-            *pbAutoRun                                  = 0;
-            pKeypressHandler->CommandState[iStrafeLeft] = 0;
-            *pbStrafeLeft                               = 0;
-            pMU->CmdStrafe                              = false;
+            pKeypressHandler->CommandState[CMD_AUTORUN] = 0;
+            pEverQuestInfo->AutoRun = 0;
+            pKeypressHandler->CommandState[CMD_STRAFE_LEFT] = 0;
+            pEverQuestInfo->keyDown[CMD_STRAFE_LEFT] = 0;
+            pMU->CmdStrafe = false;
             STICK->TimeStop();
             break;
         case GO_RIGHT:
-            pKeypressHandler->CommandState[iAutoRun]     = 0;
-            *pbAutoRun                                   = 0;
-            pKeypressHandler->CommandState[iStrafeRight] = 0;
-            *pbStrafeRight                               = 0;
-            pMU->CmdStrafe                               = false;
+            pKeypressHandler->CommandState[CMD_AUTORUN] = 0;
+            pEverQuestInfo->AutoRun = 0;
+            pKeypressHandler->CommandState[CMD_STRAFE_RIGHT] = 0;
+            pEverQuestInfo->keyDown[CMD_STRAFE_RIGHT] = 0;
+            pMU->CmdStrafe = false;
             STICK->TimeStop();
             break;
         case KILL_STRAFE:
-            pKeypressHandler->CommandState[iStrafeLeft]  = 0;
-            *pbStrafeLeft                                = 0;
-            pKeypressHandler->CommandState[iStrafeRight] = 0;
-            *pbStrafeRight                               = 0;
-            pMU->CmdStrafe                               = false;
+            pKeypressHandler->CommandState[CMD_STRAFE_LEFT] = 0;
+            pEverQuestInfo->keyDown[CMD_STRAFE_LEFT] = 0;
+            pKeypressHandler->CommandState[CMD_STRAFE_RIGHT] = 0;
+            pEverQuestInfo->keyDown[CMD_STRAFE_RIGHT] = 0;
+            pMU->CmdStrafe = false;
             STICK->TimeStop();
             break;
         case KILL_FB:
-            pKeypressHandler->CommandState[iAutoRun]  = 0;
-            *pbAutoRun                                = 0;
-            pKeypressHandler->CommandState[iForward]  = 0;
-            *pbForward                                = 0;
-            pKeypressHandler->CommandState[iBackward] = 0;
-            *pbBackward                               = 0;
-            pMU->CmdFwd                               = false;
+            pKeypressHandler->CommandState[CMD_AUTORUN]  = 0;
+            pEverQuestInfo->AutoRun = 0;
+            pKeypressHandler->CommandState[CMD_FORWARD]  = 0;
+            pEverQuestInfo->keyDown[CMD_FORWARD] = 0;
+            pKeypressHandler->CommandState[CMD_BACK] = 0;
+            pEverQuestInfo->keyDown[CMD_BACK] = 0;
+            pMU->CmdFwd = false;
             break;
         }
     };
@@ -1839,23 +1816,23 @@ private:
         {
         case GO_FORWARD:
             pMU->CmdFwd = true;
-            ExecuteCmd(iBackward, 0, 0);
-            ExecuteCmd(iForward,  1, 0);
+            ExecuteCmd(CMD_BACK, 0, 0);
+            ExecuteCmd(CMD_FORWARD, 1, 0);
             break;
         case GO_BACKWARD:
             pMU->CmdFwd = false;
-            ExecuteCmd(iForward,  0, 0);
-            ExecuteCmd(iBackward, 1, 0);
+            ExecuteCmd(CMD_FORWARD, 0, 0);
+            ExecuteCmd(CMD_BACK, 1, 0);
             break;
         case GO_LEFT:
             pMU->CmdStrafe = true;
-            ExecuteCmd(iStrafeRight, 0, 0);
-            ExecuteCmd(iStrafeLeft,  1, 0);
+            ExecuteCmd(CMD_STRAFE_RIGHT, 0, 0);
+            ExecuteCmd(CMD_STRAFE_LEFT, 1, 0);
             break;
         case GO_RIGHT:
             pMU->CmdStrafe = true;
-            ExecuteCmd(iStrafeLeft,  0, 0);
-            ExecuteCmd(iStrafeRight, 1, 0);
+            ExecuteCmd(CMD_STRAFE_LEFT, 0, 0);
+            ExecuteCmd(CMD_STRAFE_RIGHT, 1, 0);
             break;
         }
     };
@@ -1865,30 +1842,30 @@ private:
         switch (ucDirection)
         {
         case APPLY_TO_ALL:
-            ExecuteCmd(iForward,     0, 0);
-            ExecuteCmd(iBackward,    1, 0);
-            ExecuteCmd(iBackward,    0, 0);
-            ExecuteCmd(iStrafeLeft,  0, 0);
-            ExecuteCmd(iStrafeRight, 1, 0);
-            ExecuteCmd(iStrafeRight, 0, 0);
+            ExecuteCmd(CMD_FORWARD, 0, 0);
+            ExecuteCmd(CMD_BACK, 1, 0);
+            ExecuteCmd(CMD_BACK, 0, 0);
+            ExecuteCmd(CMD_STRAFE_LEFT, 0, 0);
+            ExecuteCmd(CMD_STRAFE_RIGHT, 1, 0);
+            ExecuteCmd(CMD_STRAFE_RIGHT, 0, 0);
             pMU->CmdFwd = pMU->CmdStrafe = false;
             break;
         case KILL_FB:
         case GO_FORWARD:
         case GO_BACKWARD:
-            ExecuteCmd(iForward,     1, 0);
-            ExecuteCmd(iForward,     0, 0);
-            ExecuteCmd(iBackward,    1, 0);
-            ExecuteCmd(iBackward,    0, 0);
+            ExecuteCmd(CMD_FORWARD, 1, 0);
+            ExecuteCmd(CMD_FORWARD, 0, 0);
+            ExecuteCmd(CMD_BACK, 1, 0);
+            ExecuteCmd(CMD_BACK, 0, 0);
             pMU->CmdFwd = false;
             break;
         case KILL_STRAFE:
         case GO_LEFT:
         case GO_RIGHT:
-            ExecuteCmd(iStrafeRight, 1, 0);
-            ExecuteCmd(iStrafeRight, 0, 0);
-            ExecuteCmd(iStrafeLeft,  1, 0);
-            ExecuteCmd(iStrafeLeft,  0, 0);
+            ExecuteCmd(CMD_STRAFE_RIGHT, 1, 0);
+            ExecuteCmd(CMD_STRAFE_RIGHT, 0, 0);
+            ExecuteCmd(CMD_STRAFE_LEFT,  1, 0);
+            ExecuteCmd(CMD_STRAFE_LEFT,  0, 0);
             pMU->CmdStrafe = false;
             break;
         }
@@ -5981,8 +5958,8 @@ void MainProcess(unsigned char ucCmdUsed)
                 // try to jump early (but not 1-2pulse misfires) and again after a few seconds/turns
                 if (STUCK->Jump && !sbJumping && !bLevitated && !bSwimming && ((STUCK->StuckInc % 5) == 0))
                 {
-                    ExecuteCmd(iJumpKey, 1, 0);
-                    ExecuteCmd(iJumpKey, 0, 0);
+                    ExecuteCmd(CMD_JUMP, 1, 0);
+                    ExecuteCmd(CMD_JUMP, 0, 0);
                     sbJumping = true;
                 }
 
@@ -7667,49 +7644,49 @@ void LoadConfig()
 
 inline void KeyKiller(int iKeyPressed)
 {
-    if (iKeyPressed == iForward)
+    if (iKeyPressed == CMD_FORWARD)
     {
         MOVE->DoMove(KILL_STRAFE, false, MU_WALKOFF);
         MOVE->DoMove(GO_BACKWARD, false, MU_WALKOFF);
     }
-    else if (iKeyPressed == iBackward)
+    else if (iKeyPressed == CMD_BACK)
     {
         MOVE->DoMove(KILL_STRAFE, false, MU_WALKOFF);
         MOVE->DoMove(GO_FORWARD,  false, MU_WALKOFF);
     }
-    else if (iKeyPressed == iStrafeLeft)
+    else if (iKeyPressed == CMD_STRAFE_LEFT)
     {
         MOVE->DoMove(KILL_FB,     false, MU_WALKOFF);
         MOVE->DoMove(GO_RIGHT,    false, MU_WALKOFF);
     }
-    else if (iKeyPressed == iStrafeRight)
+    else if (iKeyPressed == CMD_STRAFE_RIGHT)
     {
         MOVE->DoMove(KILL_FB,     false, MU_WALKOFF);
         MOVE->DoMove(GO_LEFT,     false, MU_WALKOFF);
     }
-    else if (iKeyPressed == iAutoRun)
+    else if (iKeyPressed == CMD_AUTORUN)
     {
         MOVE->DoMove(KILL_STRAFE, false, MU_WALKOFF);
     }
-    else if (iKeyPressed == iTurnRight)
+    else if (iKeyPressed == CMD_RIGHT)
     {
         MOVE->DoMove(APPLY_TO_ALL, false, MU_WALKOFF);
         MOVE->ChangeHead = H_INACTIVE;
         if (pMU->Head == H_TRUE)
         {
-			*pbTurnLeft                              = 0;
-			pKeypressHandler->CommandState[iTurnLeft] = 0;
+            pEverQuestInfo->keyDown[CMD_LEFT] = 0;
+            pKeypressHandler->CommandState[CMD_LEFT] = 0;
         }
         return; // return so that we do not auto heading adjust via StopHeading()
     }
-    else if (iKeyPressed == iTurnLeft)
+    else if (iKeyPressed == CMD_LEFT)
     {
         MOVE->DoMove(APPLY_TO_ALL, false, MU_WALKOFF);
         MOVE->ChangeHead = H_INACTIVE;
         if (pMU->Head == H_TRUE)
         {
-			*pbTurnRight                              = 0;
-			pKeypressHandler->CommandState[iTurnRight] = 0;
+            pEverQuestInfo->keyDown[CMD_RIGHT] = 0;
+            pKeypressHandler->CommandState[CMD_RIGHT] = 0;
         }
         return; // return so that we do not auto heading adjust via StopHeading()
     }
@@ -7719,7 +7696,7 @@ inline void KeyKiller(int iKeyPressed)
 void KeybindPressed(int iKeyPressed, int iKeyDown)
 {
     if (!ValidIngame(false))
-		return;
+        return;
 
     if (pMU->Rooted)
     {
@@ -7770,7 +7747,13 @@ void KeybindPressed(int iKeyPressed, int iKeyDown)
     {
         if (!SET->WinEQ)
         {
-            if (*pbForward || *pbBackward || *pbTurnLeft || *pbTurnRight || *pbStrafeLeft || *pbStrafeRight || *pbAutoRun)
+            if (pEverQuestInfo->keyDown[CMD_FORWARD]
+                || pEverQuestInfo->keyDown[CMD_BACK]
+                || pEverQuestInfo->keyDown[CMD_LEFT]
+                || pEverQuestInfo->keyDown[CMD_RIGHT]
+                || pEverQuestInfo->keyDown[CMD_STRAFE_LEFT]
+                || pEverQuestInfo->keyDown[CMD_STRAFE_RIGHT]
+                || pEverQuestInfo->AutoRun)
             {
                 // return until all keys let go
                 return;
@@ -7785,37 +7768,37 @@ void KeybindPressed(int iKeyPressed, int iKeyDown)
 
 void FwdWrapper(const char* szName, bool iKeyDown)
 {
-    KeybindPressed(iForward, iKeyDown);
+    KeybindPressed(CMD_FORWARD, iKeyDown);
 }
 
 void BckWrapper(const char* szName, bool iKeyDown)
 {
-    KeybindPressed(iBackward, iKeyDown);
+    KeybindPressed(CMD_BACK, iKeyDown);
 }
 
 void LftWrapper(const char* szName, bool iKeyDown)
 {
-    KeybindPressed(iTurnLeft, iKeyDown);
+    KeybindPressed(CMD_LEFT, iKeyDown);
 }
 
 void RgtWrapper(const char* szName, bool iKeyDown)
 {
-    KeybindPressed(iTurnRight, iKeyDown);
+    KeybindPressed(CMD_RIGHT, iKeyDown);
 }
 
 void StrafeLftWrapper(const char* szName, bool iKeyDown)
 {
-    KeybindPressed(iStrafeLeft, iKeyDown);
+    KeybindPressed(CMD_STRAFE_LEFT, iKeyDown);
 }
 
 void StrafeRgtWrapper(const char* szName, bool iKeyDown)
 {
-    KeybindPressed(iStrafeRight, iKeyDown);
+    KeybindPressed(CMD_STRAFE_RIGHT, iKeyDown);
 }
 
 void AutoRunWrapper(const char* szName, bool iKeyDown)
 {
-    KeybindPressed(iAutoRun, iKeyDown);
+    KeybindPressed(CMD_AUTORUN, iKeyDown);
 }
 
 void DoKeybinds()
@@ -7828,20 +7811,20 @@ void DoKeybinds()
     AddMQ2KeyBind("MUTILS_STRAFE_LFT", StrafeLftWrapper);
     AddMQ2KeyBind("MUTILS_STRAFE_RGT", StrafeRgtWrapper);
     AddMQ2KeyBind("MUTILS_AUTORUN",    AutoRunWrapper);
-    SetMQ2KeyBind("MUTILS_FWD",        FALSE, pKeypressHandler->NormalKey[iForward]);
-    SetMQ2KeyBind("MUTILS_BCK",        FALSE, pKeypressHandler->NormalKey[iBackward]);
-    SetMQ2KeyBind("MUTILS_LFT",        FALSE, pKeypressHandler->NormalKey[iTurnLeft]);
-    SetMQ2KeyBind("MUTILS_RGT",        FALSE, pKeypressHandler->NormalKey[iTurnRight]);
-    SetMQ2KeyBind("MUTILS_STRAFE_LFT", FALSE, pKeypressHandler->NormalKey[iStrafeLeft]);
-    SetMQ2KeyBind("MUTILS_STRAFE_RGT", FALSE, pKeypressHandler->NormalKey[iStrafeRight]);
-    SetMQ2KeyBind("MUTILS_AUTORUN",    FALSE, pKeypressHandler->NormalKey[iAutoRun]);
-    SetMQ2KeyBind("MUTILS_FWD",        TRUE,  pKeypressHandler->AltKey[iForward]);
-    SetMQ2KeyBind("MUTILS_BCK",        TRUE,  pKeypressHandler->AltKey[iBackward]);
-    SetMQ2KeyBind("MUTILS_LFT",        TRUE,  pKeypressHandler->AltKey[iTurnLeft]);
-    SetMQ2KeyBind("MUTILS_RGT",        TRUE,  pKeypressHandler->AltKey[iTurnRight]);
-    SetMQ2KeyBind("MUTILS_STRAFE_LFT", TRUE,  pKeypressHandler->AltKey[iStrafeLeft]);
-    SetMQ2KeyBind("MUTILS_STRAFE_RGT", TRUE,  pKeypressHandler->AltKey[iStrafeRight]);
-    SetMQ2KeyBind("MUTILS_AUTORUN",    TRUE,  pKeypressHandler->AltKey[iAutoRun]);
+    SetMQ2KeyBind("MUTILS_FWD",        false, pKeypressHandler->NormalKey[CMD_FORWARD]);
+    SetMQ2KeyBind("MUTILS_BCK",        false, pKeypressHandler->NormalKey[CMD_BACK]);
+    SetMQ2KeyBind("MUTILS_LFT",        false, pKeypressHandler->NormalKey[CMD_LEFT]);
+    SetMQ2KeyBind("MUTILS_RGT",        false, pKeypressHandler->NormalKey[CMD_RIGHT]);
+    SetMQ2KeyBind("MUTILS_STRAFE_LFT", false, pKeypressHandler->NormalKey[CMD_STRAFE_LEFT]);
+    SetMQ2KeyBind("MUTILS_STRAFE_RGT", false, pKeypressHandler->NormalKey[CMD_STRAFE_RIGHT]);
+    SetMQ2KeyBind("MUTILS_AUTORUN",    false, pKeypressHandler->NormalKey[CMD_AUTORUN]);
+    SetMQ2KeyBind("MUTILS_FWD",        true,  pKeypressHandler->AltKey[CMD_FORWARD]);
+    SetMQ2KeyBind("MUTILS_BCK",        true,  pKeypressHandler->AltKey[CMD_BACK]);
+    SetMQ2KeyBind("MUTILS_LFT",        true,  pKeypressHandler->AltKey[CMD_LEFT]);
+    SetMQ2KeyBind("MUTILS_RGT",        true,  pKeypressHandler->AltKey[CMD_RIGHT]);
+    SetMQ2KeyBind("MUTILS_STRAFE_LFT", true,  pKeypressHandler->AltKey[CMD_STRAFE_LEFT]);
+    SetMQ2KeyBind("MUTILS_STRAFE_RGT", true,  pKeypressHandler->AltKey[CMD_STRAFE_RIGHT]);
+    SetMQ2KeyBind("MUTILS_AUTORUN",    true,  pKeypressHandler->AltKey[CMD_AUTORUN]);
     pMU->Keybinds = true;
 }
 
@@ -7858,99 +7841,7 @@ void UndoKeybinds()
     pMU->Keybinds = false;
 }
 
-inline void FindKeys()
-{
-    iForward     = FindMappableCommand("forward");
-    iBackward    = FindMappableCommand("back");
-    iAutoRun     = FindMappableCommand("autorun");
-    iStrafeLeft  = FindMappableCommand("strafe_left");
-    iStrafeRight = FindMappableCommand("strafe_right");
-    iTurnLeft    = FindMappableCommand("left");
-    iTurnRight   = FindMappableCommand("right");
-    iJumpKey     = FindMappableCommand("jump");
-    iDuckKey     = FindMappableCommand("duck");
-    iRunWalk     = FindMappableCommand("run_walk");
-}
-
 // End keybind handling
-// ----------------------------------------
-// Offsets & pointers
-
-/*
-// ---------------------------------------------------------------------------
-// credit: radioactiveman/bunny771/(dom1n1k?) --------------------------------
-bool DataCompare(const unsigned char* pucData, const unsigned char* pucMask, const char* pszMask)
-{
-    for (; *pszMask; ++pszMask, ++pucData, ++pucMask)
-        if (*pszMask == 'x' && *pucData != *pucMask) return false;
-    return (*pszMask) == NULL;
-}
-
-unsigned long FindPattern(unsigned long ulAddress, unsigned long ulLen, unsigned char* pucMask, char* pszMask)
-{
-    for (unsigned long i = 0; i < ulLen; i++)
-    {
-        if (DataCompare((unsigned char*)(ulAddress + i), pucMask, pszMask)) return (unsigned long)(ulAddress + i);
-    }
-    return 0;
-}
-// ---------------------------------------------------------------------------
-// copyright: ieatacid -------------------------------------------------------
-unsigned long GetDWordAt(unsigned long ulAddress, unsigned long ulNumBytes)
-{
-    if (ulAddress)
-    {
-        ulAddress += ulNumBytes;
-        return *(unsigned long*)ulAddress;
-    }
-    return 0;
-}
-// ---------------------------------------------------------------------------
-
-inline unsigned char FindPointers()
-{
-#if defined(ROF2EMU) || defined(UFEMU)
-   if ((addrTurnRight   = FindPattern(FixOffset(0x420000), 0x200000, patternTurnRight, maskTurnRight)) == 0)     return 1;
-   if ((pulTurnRight    = (unsigned long*)GetDWordAt(addrTurnRight, 1)) == 0)                         return 2;
-   if ((pulStrafeLeft   = (unsigned long*)GetDWordAt(addrTurnRight, 7)) == 0)                         return 3;
-   if ((pulStrafeRight  = (unsigned long*)GetDWordAt(addrTurnRight, 13)) == 0)                        return 4;
-   if ((pulAutoRun      = (unsigned long*)GetDWordAt(addrTurnRight, 27)) == 0)                        return 5;
-   if ((pulTurnLeft     = (unsigned long*)GetDWordAt(addrTurnRight, 42)) == 0)                        return 6;
-   if ((addrMoveForward = FindPattern(FixOffset(0x420000), 0x200000, patternMoveForward, maskMoveForward)) == 0) return 7;
-   if ((pulForward      = (unsigned long*)GetDWordAt(addrMoveForward, 1)) == 0)                       return 8;
-   if (pulAutoRun      != (unsigned long*)GetDWordAt(addrMoveForward, 15))                            return 9;
-   if ((pulBackward     = (unsigned long*)GetDWordAt(addrMoveForward, 30)) == 0)                      return 10;
-   return 0;
-#else
-	if ((addrTurnRight = FindPattern(FixOffset(0x580000), 0x200000, patternTurnRight, maskTurnRight)) == 0)     return 1;
-	if ((pulTurnRight = (unsigned long*)GetDWordAt(addrTurnRight, 1)) == 0)                         return 2;
-	if ((pulStrafeLeft = (unsigned long*)GetDWordAt(addrTurnRight, 7)) == 0)                         return 3;
-	if ((pulStrafeRight = (unsigned long*)GetDWordAt(addrTurnRight, 17)) == 0)                        return 4;
-	if ((pulAutoRun = (unsigned long*)GetDWordAt(addrTurnRight, 34)) == 0)                        return 5;
-	if ((pulTurnLeft = (unsigned long*)GetDWordAt(addrTurnRight, 42)) == 0)                        return 6;
-	if ((addrMoveForward = FindPattern(FixOffset(0x580000), 0x200000, patternMoveForward, maskMoveForward)) == 0) return 7;
-	if ((pulForward = (unsigned long*)GetDWordAt(addrMoveForward, 1)) == 0)                       return 8;
-	if (pulAutoRun != (unsigned long*)GetDWordAt(addrMoveForward, 51))                            return 9;
-	if ((pulBackward = (unsigned long*)GetDWordAt(addrMoveForward, 22)) == 0)                      return 10;
-
-	DebugSpewAlways("%s::pulTurnRight = 0x%x, 0x%x", PLUGIN_NAME, pulTurnRight, FixOffset(MQ2MoveUtils__pulTurnRight_x));
-	DebugSpewAlways("%s::pulStrafeLeft = 0x%x, 0x%x", PLUGIN_NAME, pulStrafeLeft, FixOffset(MQ2MoveUtils__pulStrafeLeft_x));
-	DebugSpewAlways("%s::pulStrafeRight = 0x%x, 0x%x", PLUGIN_NAME, pulStrafeRight, FixOffset(MQ2MoveUtils__pulStrafeRight_x));
-	DebugSpewAlways("%s::pulAutoRun = 0x%x, 0x%x", PLUGIN_NAME, pulAutoRun, FixOffset(MQ2MoveUtils__pulAutoRun_x));
-	DebugSpewAlways("%s::pulTurnLeft = 0x%x, 0x%x", PLUGIN_NAME, pulTurnLeft, FixOffset(MQ2MoveUtils__pulTurnLeft_x));
-	DebugSpewAlways("%s::pulForward = 0x%x, 0x%x", PLUGIN_NAME, pulForward, FixOffset(MQ2MoveUtils__pulForward_x));
-	DebugSpewAlways("%s::pulBackward = 0x%x, 0x%x", PLUGIN_NAME, pulBackward, FixOffset(MQ2MoveUtils__pulBackward_x));
-	pulAutoRun = (unsigned long *)FixOffset(__pulAutoRun_x);
-	pulForward = (unsigned long *)FixOffset(__pulForward_x);
-	pulBackward = (unsigned long *)FixOffset(__pulBackward_x);
-	pulTurnRight = (unsigned long *)FixOffset(__pulTurnRight_x);
-	pulTurnLeft = (unsigned long *)FixOffset(__pulTurnLeft_x);
-	pulStrafeLeft = (unsigned long *)FixOffset(__pulStrafeLeft_x);
-	pulStrafeRight = (unsigned long *)FixOffset(__pulStrafeRight_x);
-	return 0;
-#endif
-}
-*/
 
 // ---------------------------------------------------------------------------
 // MQ2 Exported functions
@@ -7964,15 +7855,7 @@ unsigned int __stdcall MQ2DataVariableLookup(char * VarName, char * Value,size_t
 }
 PLUGIN_API void InitializePlugin()
 {
-	pMoveEvent = new Blech('#','|',MQ2DataVariableLookup);
-
-	pbAutoRun = (uint8_t*)FixOffset(__pulAutoRun_x);
-	pbForward = (uint8_t*)FixOffset(__pulForward_x);
-	pbBackward = (uint8_t*)FixOffset(__pulBackward_x);
-	pbTurnRight = (uint8_t*)FixOffset(__pulTurnRight_x);
-	pbTurnLeft = (uint8_t*)FixOffset(__pulTurnLeft_x);
-	pbStrafeLeft = (uint8_t*)FixOffset(__pulStrafeLeft_x);
-	pbStrafeRight = (uint8_t*)FixOffset(__pulStrafeRight_x);
+    pMoveEvent = new Blech('#','|',MQ2DataVariableLookup);
 
     // commands
     AddCommand("/makecamp",  MakeCampWrapper, FALSE, TRUE, TRUE);
@@ -8060,6 +7943,7 @@ PLUGIN_API void ShutdownPlugin()
     delete pMU;
     delete SET;
 }
+
 unsigned int __stdcall MQ2DataVariableLookup2(char * VarName, char * Value,size_t ValueLen)
 {
 	strcpy_s(Value, ValueLen, VarName);
@@ -8068,13 +7952,14 @@ unsigned int __stdcall MQ2DataVariableLookup2(char * VarName, char * Value,size_
 	}
 	return (unsigned int)strlen(Value);
 }
+
 PLUGIN_API void SetGameState(unsigned long ulGameState)
 {
     //DebugToDebugger("SetGameState %d", ulGameState);
     if (ulGameState == GAMESTATE_INGAME)
     {
         sprintf_s(szCharName, "%s.%s", EQADDR_SERVERNAME, ((PCHARINFO)pCharData)->Name);
-        FindKeys();
+
         if (!pMU->Keybinds)
         {
             DoKeybinds();
