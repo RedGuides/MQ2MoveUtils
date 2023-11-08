@@ -636,7 +636,7 @@ public:
     void AtMe()
     {
         // HandleOurCmd calls this to establish '/circle on' without loc supplied
-        PlayerClient* pChSpawn = (PlayerClient*)pCharSpawn;
+        PlayerClient* pChSpawn = pCharSpawn;
         Y = pChSpawn->Y + Radius * sin(pChSpawn->Heading * (float)PI / HEADING_HALF);
         X = pChSpawn->X + Radius * cos(pChSpawn->Heading * (float)PI / HEADING_HALF);
         On = true;
@@ -1129,7 +1129,7 @@ public:
             // verify we didnt ditch our stick target
             if (STICK->On && (!STICK->Always || (STICK->Always && STICK->HaveTarget)))
             {
-                PlayerClient* psTarget = (PlayerClient*)(STICK->Hold ? GetSpawnByID(STICK->HoldID) : pTarget);
+                PlayerClient* psTarget = STICK->Hold ? GetSpawnByID(STICK->HoldID) : pTarget;
                 if (!psTarget || (STICK->Hold && STICK->HoldType != GetSpawnType(psTarget)))
                 {
                     Reset();
@@ -1176,7 +1176,7 @@ public:
         {
             if (STICK->On && (!STICK->Always || (STICK->Always && STICK->HaveTarget)))
             {
-                PlayerClient* psTarget = (PlayerClient*)(STICK->Hold ? GetSpawnByID(STICK->HoldID) : pTarget);
+                PlayerClient* psTarget = STICK->Hold ? GetSpawnByID(STICK->HoldID) : pTarget;
                 if (!psTarget || (STICK->Hold && STICK->HoldType != GetSpawnType(psTarget)))
                 {
                     Reset();
@@ -1393,7 +1393,7 @@ public:
             break;
         case H_FAST:
         default:
-            ((PlayerClient*)pCharSpawn)->CameraAngle = (float)dNewFace;
+            pCharSpawn->CameraAngle = (float)dNewFace;
             break;
         }
     };
@@ -1405,7 +1405,7 @@ public:
         // we do it this way because true heading holds down the turn keys
         if (ChangeHead != H_INACTIVE)
         {
-            TurnHead(((PlayerClient*)pCharSpawn)->Heading);
+            TurnHead(pCharSpawn->Heading);
         }
     };
 
@@ -1469,7 +1469,7 @@ public:
         // within a close enough turn to prevent orbiting around
         // a destination or running away from a close destination
         if (!ValidIngame()) return false;
-        PlayerClient* pChSpawn = (PlayerClient*)pCharSpawn;
+        PlayerClient* pChSpawn = pCharSpawn;
         float fHeadDiff = fabs(pChSpawn->Heading - fHead);
 
         if (fHeadDiff > SET->AllowMove)
@@ -1510,7 +1510,7 @@ public:
         // stand up when desired (if appropriate)
         // feignsupport is handled *here only*
         if (!ValidIngame()) return;
-        PlayerClient* pChSpawn = (PlayerClient*)pCharSpawn;
+        PlayerClient* pChSpawn = pCharSpawn;
 
         switch (pChSpawn->StandState)
         {
@@ -1630,14 +1630,14 @@ private:
     {
         if (!ValidIngame()) return;
         gFaceAngle = H_INACTIVE;
-        ((PlayerClient*)pCharSpawn)->Heading = fNewHead;
+        pCharSpawn->Heading = fNewHead;
     };
 
     void LooseTurn(float fNewHead)
     {
         if (!ValidIngame()) return;
         gFaceAngle = H_INACTIVE;
-        PlayerClient* pChSpawn = (PlayerClient*)pCharSpawn;
+        PlayerClient* pChSpawn = pCharSpawn;
         if (fabs(pChSpawn->Heading - fNewHead) < SET->TurnRate)
         {
             // if we are within one turn away, set heading to desired heading
@@ -1667,7 +1667,7 @@ private:
     {
         if (!ValidIngame()) return;
         gFaceAngle = H_INACTIVE;
-        PlayerClient* pChSpawn = (PlayerClient*)pCharSpawn;
+        PlayerClient* pChSpawn = pCharSpawn;
         if (fabs(pChSpawn->Heading - fNewHead) < 14.0f)
         {
             pKeypressHandler->CommandState[CMD_LEFT] = 0;
@@ -1925,7 +1925,7 @@ bool CMoveToCmd::DidAggro()
 
 bool CStickCmd::AlwaysStatus()
 {
-    if (!pTarget || ((PlayerClient*)pTarget)->Type != SPAWN_NPC)
+    if (!pTarget || pTarget->Type != SPAWN_NPC)
     {
         if (AlwaysReady)
         {
@@ -1998,7 +1998,7 @@ void CMUActive::AggroTLO()
 {
     if (pTarget)
     {
-        if (fabs(MOVE->AngDist(((PlayerClient*)pTarget)->Heading, ((PlayerClient*)pCharSpawn)->Heading)) > 190.0f)
+        if (fabs(MOVE->AngDist(pTarget->Heading, pCharSpawn->Heading)) > 190.0f)
         {
             Aggro = true;
             return;
@@ -2325,7 +2325,7 @@ public:
             Dest.Float = 0.0f;
             if (CURCAMP->On)
             {
-                PlayerClient* pLPlayer = (PlayerClient*)pLocalPlayer;
+                PlayerClient* pLPlayer = pLocalPlayer;
                 Dest.Float = GetDistance(pLPlayer->Y, pLPlayer->X, CURCAMP->Y, CURCAMP->X);
             }
             Dest.Type = mq::datatypes::pFloatType;
@@ -2334,7 +2334,7 @@ public:
             Dest.Float = 0.0f;
             if (ALTCAMP->On)
             {
-                PlayerClient* pLPlayer = (PlayerClient*)pLocalPlayer;
+                PlayerClient* pLPlayer = pLocalPlayer;
                 Dest.Float = GetDistance(pLPlayer->Y, pLPlayer->X, ALTCAMP->Y, ALTCAMP->X);
             }
             Dest.Type = mq::datatypes::pFloatType;
@@ -2485,18 +2485,18 @@ public:
             return true;
         case Behind:
             Dest.DWord = false;
-            if (PlayerClient* psTarget = (PlayerClient*)(STICK->Hold ? GetSpawnByID(STICK->HoldID) : pTarget))
+            if (PlayerClient* psTarget = STICK->Hold ? GetSpawnByID(STICK->HoldID) : pTarget)
             {
-                PlayerClient* pChSpawn = (PlayerClient*)pCharSpawn;
+                PlayerClient* pChSpawn = pCharSpawn;
                 Dest.DWord = (fabs(GetDistance(pChSpawn, psTarget)) <= ((STICK->Dist > 0.0f ? STICK->Dist : (psTarget->StandState ? get_melee_range(pLocalPlayer, psTarget) : 15.0f)) * STICK->DistModP + STICK->DistMod) && fabs(MOVE->AngDist(psTarget->Heading, pChSpawn->Heading)) <= STICK->ArcBehind) ? true : false;
             }
             Dest.Type = mq::datatypes::pBoolType;
             return true;
         case Stopped:
             Dest.DWord = false;
-            if (PlayerClient* psTarget = (PlayerClient*)(STICK->Hold ? GetSpawnByID(STICK->HoldID) : pTarget))
+            if (PlayerClient* psTarget = STICK->Hold ? GetSpawnByID(STICK->HoldID) : pTarget)
             {
-                Dest.DWord = (fabs(GetDistance((PlayerClient*)pCharSpawn, psTarget)) <= STICK->Dist) ? true : false;
+                Dest.DWord = (fabs(GetDistance(pCharSpawn, psTarget)) <= STICK->Dist) ? true : false;
             }
             Dest.Type = mq::datatypes::pBoolType;
             return true;
@@ -2506,7 +2506,7 @@ public:
             return true;
         case StickTarget:
             Dest.Int = 0;
-            if (PlayerClient* psTarget = (PlayerClient*)(STICK->Hold ? GetSpawnByID(STICK->HoldID) : pTarget))
+            if (PlayerClient* psTarget = STICK->Hold ? GetSpawnByID(STICK->HoldID) : pTarget)
             {
                 Dest.Int = psTarget->SpawnID;
             }
@@ -2514,7 +2514,7 @@ public:
             return true;
         case StickTargetName:
             strcpy_s(DataTypeTemp, "NONE");
-            if (PlayerClient* psTarget = (PlayerClient*)(STICK->Hold ? GetSpawnByID(STICK->HoldID) : pTarget))
+            if (PlayerClient* psTarget = STICK->Hold ? GetSpawnByID(STICK->HoldID) : pTarget)
             {
                 strcpy_s(DataTypeTemp, psTarget->DisplayedName);
             }
@@ -2604,7 +2604,7 @@ public:
         case Stopped:
             /*if (pLocalPlayer)
             {
-                Dest.DWord = (fabs(GetDistance(((PlayerClient*)pCharSpawn)->Y, ((PlayerClient*)pCharSpawn)->X, MOVETO->Y, MOVETO->X)) <= MOVETO->Dist) ? true : false;
+                Dest.DWord = (fabs(GetDistance(pCharSpawn->Y, (pCharSpawn->X, MOVETO->Y, MOVETO->X)) <= MOVETO->Dist) ? true : false;
             }*/
             Dest.DWord = pMU->StoppedMoveto;
             Dest.Type  = mq::datatypes::pBoolType;
@@ -2613,7 +2613,7 @@ public:
             Dest.DWord = false;
             if (pLocalPlayer)
             {
-                Dest.DWord = (fabs(GetDistance(((PlayerClient*)pCharSpawn)->Y, ((PlayerClient*)pCharSpawn)->X, CAMP->Y, CAMP->X)) <= MOVETO->Dist) ? true : false;
+                Dest.DWord = (fabs(GetDistance(pCharSpawn->Y, pCharSpawn->X, CAMP->Y, CAMP->X)) <= MOVETO->Dist) ? true : false;
             }
             Dest.Type  = mq::datatypes::pBoolType;
             return true;
@@ -2985,7 +2985,7 @@ void __stdcall CheckGates_Event(unsigned int ID, void *pData, PBLECHVALUE pValue
 {
     if (!ValidIngame() || !STICK->On || !STICK->BreakGate)
 		return;
-    PlayerClient* psTarget = (PlayerClient*)((STICK->Hold && STICK->HoldID) ? GetSpawnByID(STICK->HoldID) : pTarget);
+    PlayerClient* psTarget = (STICK->Hold && STICK->HoldID) ? GetSpawnByID(STICK->HoldID) : pTarget;
     if (psTarget && pValues)
     {
         if (pValues->Value == psTarget->DisplayedName)
@@ -3166,7 +3166,7 @@ float MovingAvg(float fNew, int iEntries)
 inline bool ValidIngame(bool bCheckDead)
 {
     // CTD prevention function
-    PlayerClient* pChSpawn = (PlayerClient*)pCharSpawn;
+    PlayerClient* pChSpawn = pCharSpawn;
     if (GetGameState() != GAMESTATE_INGAME || !pLocalPlayer || !pChSpawn->SpawnID || !pMU || (bCheckDead && pChSpawn->RespawnTimer > 0))
     {
         return false;
@@ -3228,9 +3228,9 @@ void HandleOurCmd(unsigned char ucCmdUsed, char* szInput)
 
     PlayerClient* pTargetUsed = NULL; // stick id, moveto id
     PlayerClient* pCampPlayer = NULL; // makecamp player
-    PlayerClient* psTarget    = (PlayerClient*)pTarget;
-    PlayerClient* pLPlayer    = (PlayerClient*)pLocalPlayer;
-    PlayerClient* pChSpawn    = (PlayerClient*)pCharSpawn;
+    PlayerClient* psTarget    = pTarget;
+    PlayerClient* pLPlayer    = pLocalPlayer;
+    PlayerClient* pChSpawn    = pCharSpawn;
 
     // switch direction of turnhalf randomly
     if (rand() % 100 > 50) STUCK->TurnSize *= -1.0f;
@@ -3655,7 +3655,7 @@ void HandleOurCmd(unsigned char ucCmdUsed, char* szInput)
                     WriteLine(szMsg, V_ERRORS);
                     return;
                 }
-                pByID = (PlayerClient*)GetSpawnByID((unsigned long)iValid);
+                pByID = GetSpawnByID((unsigned long)iValid);
                 if (pByID)
                 {
                     if (ME->IsMe(pByID))
@@ -3665,7 +3665,7 @@ void HandleOurCmd(unsigned char ucCmdUsed, char* szInput)
                         WriteLine(szMsg, V_ERRORS);
                         return;
                     }
-                    pTargetUsed = (PlayerClient*)pByID;
+                    pTargetUsed = pByID;
                     uiArgNum++; // incremeted if # is valid, but not otherwise so that someone can use '/stick id behind' to use target. bad form but nonetheless
                 }
                 else
@@ -3774,7 +3774,7 @@ void HandleOurCmd(unsigned char ucCmdUsed, char* szInput)
                         EndPreviousCmd(true);
                         return;
                     }
-                    pTargetUsed     = (PlayerClient*)psTarget;
+                    pTargetUsed     = psTarget;
                     STICK->HoldID   = pTargetUsed->SpawnID;
                     STICK->HoldType = GetSpawnType(pTargetUsed);
                     STICK->Hold     = true;
@@ -4271,11 +4271,11 @@ void HandleOurCmd(unsigned char ucCmdUsed, char* szInput)
                 GetArg(szCurrentArg, szInput, uiArgNum++);
                 if (*szCurrentArg)
                 {
-                    pCampPlayer = (PlayerClient*)GetSpawnByName(szCurrentArg);
+                    pCampPlayer = GetSpawnByName(szCurrentArg);
                 }
                 else if (psTarget && psTarget->Type == SPAWN_PLAYER)
                 {
-                    pCampPlayer = (PlayerClient*)GetSpawnByID(psTarget->SpawnID);
+                    pCampPlayer = GetSpawnByID(psTarget->SpawnID);
                 }
                 if (!pCampPlayer)
                 {
@@ -4589,8 +4589,8 @@ void MakeCampWrapper(PlayerClient* pLPlayer, char* szLine)
 void CalcOurAngle(PlayerClient* pLPlayer, char* szLine)
 {
     if (!ValidIngame() || !pTarget) return;
-    PlayerClient* psTarget = (PlayerClient*)pTarget;
-    PlayerClient* pChSpawn = (PlayerClient*)pCharSpawn;
+    PlayerClient* psTarget = pTarget;
+    PlayerClient* pChSpawn = pCharSpawn;
     float fAngle   = MOVE->AngDist(psTarget->Heading, pChSpawn->Heading);
     float fReqHead = MOVE->SaneHead(atan2(psTarget->X - pChSpawn->X, psTarget->Y - pChSpawn->Y) * HEADING_HALF / (float)PI);
     fReqHead = pChSpawn->Heading - fReqHead;
@@ -4630,7 +4630,7 @@ void RootCmd(PlayerClient* pLPlayer, char* szLine)
         EndPreviousCmd(true);
         CAMP->NewCamp(CURCAMP->On);
         pMU->Rooted    = true;
-        MOVE->RootHead = ((PlayerClient*)pCharSpawn)->Heading;
+        MOVE->RootHead = pCharSpawn->Heading;
         sprintf_s(szTempOut, "\ay%s\aw:: You are now rooted in place.", PLUGIN_NAME);
         WriteLine(szTempOut, V_SILENCE);
     }
@@ -5480,10 +5480,10 @@ void ChangeSetting(unsigned char ucCmdUsed, bool bToggle, char szSetting[MAX_STR
 void MainProcess(unsigned char ucCmdUsed)
 {
     PCHARINFO  pChData     = (PCHARINFO)pCharData;
-    PlayerClient* pChSpawn    = (PlayerClient*)pCharSpawn;
-    PlayerClient* pLPlayer    = (PlayerClient*)pLocalPlayer;
-    PlayerClient* psTarget    = (PlayerClient*)(STICK->Hold ? GetSpawnByID(STICK->HoldID) : pTarget);
-    PlayerClient* pCampPlayer = (PlayerClient*)GetSpawnByID(CURCAMP->PcID);
+    PlayerClient* pChSpawn    = pCharSpawn;
+    PlayerClient* pLPlayer    = pLocalPlayer;
+    PlayerClient* psTarget    = STICK->Hold ? GetSpawnByID(STICK->HoldID) : pTarget;
+    PlayerClient* pCampPlayer = GetSpawnByID(CURCAMP->PcID);
 
     // ------------------------------------------
     // handle null stick pointers
@@ -6655,7 +6655,7 @@ void DebugToWnd(unsigned char ucCmdUsed)
         WriteLine(szTemp, V_SILENCE);
         if (STICK->Hold)
         {
-            PlayerClient* pStickThis = (PlayerClient*)GetSpawnByID(STICK->HoldID);
+            PlayerClient* pStickThis = GetSpawnByID(STICK->HoldID);
             if (pStickThis)
             {
                 sprintf_s(szTempID, "%s", pStickThis->DisplayedName);
@@ -6691,7 +6691,7 @@ void DebugToWnd(unsigned char ucCmdUsed)
         WriteLine(szTemp, V_SILENCE);
         if (CURCAMP->Pc)
         {
-            PlayerClient* pCampThis = (PlayerClient*)GetSpawnByID(CURCAMP->PcID);
+            PlayerClient* pCampThis = GetSpawnByID(CURCAMP->PcID);
             if (pCampThis)
             {
                 sprintf_s(szTempID, "%s", pCampThis->DisplayedName);
@@ -8146,8 +8146,8 @@ PLUGIN_API void OnPulse()
 // ---------------------------------------------------------------------------
 // old debug info
 //
-    //PlayerClient* pChSpawn = (PlayerClient*)pCharSpawn;
-    //PlayerClient* psTarget = (PlayerClient*)pTarget;
+    //PlayerClient* pChSpawn = pCharSpawn;
+    //PlayerClient* psTarget = pTarget;
     //DebugSpew("For - %x - Back - %x - Left - %x - Right - %x", pKeypressHandler->CommandState[iForward], pKeypressHandler->CommandState[iBackward], pKeypressHandler->CommandState[iStrafeLeft], pKeypressHandler->CommandState[iStrafeRight]);
     /*char szHead[100] = {0};
     sprintf_s(szHead, "%.4f", pChSpawn->Heading);
