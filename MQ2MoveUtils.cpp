@@ -154,6 +154,7 @@ unsigned int uiRetainFlags = V_EVERYTHING; // stores flags for when totalsilence
 // -----------------------
 // import / export
 
+PLUGIN_API float fStickDistance = 0; // exporting to share the distance we're sticking.
 PLUGIN_API bool bStickOn = false; // stick active or off, exported for other plugins to have a sure way of always knowing
 PLUGIN_API void StickCommand(PSPAWNINFO pLPlayer, char* szLine); // exported wrapper for MQ2Melee support
 // note to any developers: if you intend to use these exports and want to shut off stick, do not flip STICK->On directly,
@@ -3730,7 +3731,7 @@ void HandleOurCmd(unsigned char ucCmdUsed, char* szInput)
             {
                 if ((float)atof(szCurrentArg) * STICK->DistModP + STICK->DistMod > 0.0f)
                 {
-                    STICK->Dist = (float)atof(szCurrentArg) * STICK->DistModP + STICK->DistMod;
+                    STICK->Dist = fStickDistance = GetFloatFromString(szCurrentArg, 0.0f) * STICK->DistModP + STICK->DistMod;
                 }
                 STICK->SetDist = true;
                 STICK->TurnOn();
@@ -5600,7 +5601,7 @@ void MainProcess(unsigned char ucCmdUsed)
     {
         if (!STICK->SetDist)
         {
-            STICK->Dist    = (psTarget->StandState ? get_melee_range(pLocalPlayer, (PlayerClient*)psTarget) : 15.0f) * STICK->DistModP + STICK->DistMod;
+            STICK->Dist = fStickDistance = (psTarget->StandState ? get_melee_range(pLocalPlayer, psTarget) : 15.0f) * STICK->DistModP + STICK->DistMod;
             STICK->SetDist = true;
         }
 
