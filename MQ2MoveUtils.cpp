@@ -3731,7 +3731,7 @@ void HandleOurCmd(unsigned char ucCmdUsed, char* szInput)
             {
                 if ((float)atof(szCurrentArg) * STICK->DistModP + STICK->DistMod > 0.0f)
                 {
-                    STICK->Dist = fStickDistance = (float)atof(szCurrentArg) * STICK->DistModP + STICK->DistMod;
+                    STICK->Dist = fStickDistance = GetFloatFromString(szCurrentArg, 0.0f) * STICK->DistModP + STICK->DistMod;
                 }
                 STICK->SetDist = true;
                 STICK->TurnOn();
