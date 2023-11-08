@@ -3490,7 +3490,7 @@ void HandleOurCmd(unsigned char ucCmdUsed, char* szInput)
                 GetArg(szCurrentArg, szInput, uiArgNum++);
                 if (isdigit(szCurrentArg[0]))
                 {
-                    CURCAMP->SetRadius((float)atof(szCurrentArg));
+                    CURCAMP->SetRadius(GetFloatFromString(szCurrentArg, 0.0f));
                     GetArg(szCurrentArg, szInput, uiArgNum); // because when we break from this we enter 'while' for NEW args
                 }
                 break;
@@ -3499,7 +3499,7 @@ void HandleOurCmd(unsigned char ucCmdUsed, char* szInput)
                 GetArg(szCurrentArg, szInput, uiArgNum++);
                 if (isdigit(szCurrentArg[0]))
                 {
-                    CIRCLE->SetRadius((float)atof(szCurrentArg));
+                    CIRCLE->SetRadius(GetFloatFromString(szCurrentArg, 0.0f));
                     GetArg(szCurrentArg, szInput, uiArgNum); // because when we break from this we enter 'while' for NEW args
                 }
                 CIRCLE->AtMe();
@@ -3511,7 +3511,7 @@ void HandleOurCmd(unsigned char ucCmdUsed, char* szInput)
             GetArg(szCurrentArg, szInput, uiArgNum++);
             if (isdigit(szCurrentArg[0]) || szCurrentArg[0] == '-' || szCurrentArg[0] == '.')
             {
-                STICK->DistMod = (float)atof(szCurrentArg);
+                STICK->DistMod = GetFloatFromString(szCurrentArg, 0.0f);
                 sprintf_s(szMsg, "\ay%s\aw:: Stick modifier changed to Mod(\ag%.2f\ax) Mod%%(\ag%.2f%%\ax)", PLUGIN_NAME, STICK->DistMod, STICK->DistModP);
                 WriteLine(szMsg, V_SETTINGS);
                 return;
@@ -3529,15 +3529,15 @@ void HandleOurCmd(unsigned char ucCmdUsed, char* szInput)
                 EndPreviousCmd(true);
                 if (isdigit(szCurrentArg[0]) || szCurrentArg[0] == '-' || szCurrentArg[0] == '.')
                 {
-                    fTempY = (float)atof(szCurrentArg);
+                    fTempY = GetFloatFromString(szCurrentArg, 0.0f);
                     GetArg(szCurrentArg, szInput, uiArgNum++);
                     if (isdigit(szCurrentArg[0]) || szCurrentArg[0] == '-' || szCurrentArg[0] == '.')
                     {
-                        float fTempX = (float)atof(szCurrentArg);
+                        float fTempX = GetFloatFromString(szCurrentArg, 0.0f);
                         GetArg(szCurrentArg, szInput, uiArgNum++);
                         if (isdigit(szCurrentArg[0]) || szCurrentArg[0] == '-' || szCurrentArg[0] == '.')
                         {
-                            MOVETO->Activate(fTempY, fTempX, (float)atof(szCurrentArg));
+                            MOVETO->Activate(fTempY, fTempX, GetFloatFromString(szCurrentArg, 0.0f));
                             GetArg(szCurrentArg, szInput, uiArgNum);
                             break;
                         }
@@ -3552,11 +3552,11 @@ void HandleOurCmd(unsigned char ucCmdUsed, char* szInput)
                 PAUSE->TimeStop();
                 if (isdigit(szCurrentArg[0]) || szCurrentArg[0] == '-' || szCurrentArg[0] == '.')
                 {
-                    fTempY = (float)atof(szCurrentArg);
+                    fTempY = GetFloatFromString(szCurrentArg, 0.0f);
                     GetArg(szCurrentArg, szInput, uiArgNum++);
                     if (isdigit(szCurrentArg[0]) || szCurrentArg[0] == '-' || szCurrentArg[0] == '.')
                     {
-                        CAMP->Activate(fTempY, (float)atof(szCurrentArg));
+                        CAMP->Activate(fTempY, GetFloatFromString(szCurrentArg, 0.0f));
                         GetArg(szCurrentArg, szInput, uiArgNum);
                         break;
                     }
@@ -3567,11 +3567,11 @@ void HandleOurCmd(unsigned char ucCmdUsed, char* szInput)
                 EndPreviousCmd(true, ucCmdUsed, true); // dont reset circle variables
                 if (isdigit(szCurrentArg[0]) || szCurrentArg[0] == '-' || szCurrentArg[0] == '.')
                 {
-                    fTempY = (float)atof(szCurrentArg);
+                    fTempY = GetFloatFromString(szCurrentArg, 0.0f);
                     GetArg(szCurrentArg, szInput, uiArgNum++);
                     if (isdigit(szCurrentArg[0]) || szCurrentArg[0] == '-' || szCurrentArg[0] == '.')
                     {
-                        CIRCLE->AtLoc(fTempY, (float)atof(szCurrentArg));
+                        CIRCLE->AtLoc(fTempY, GetFloatFromString(szCurrentArg, 0.0f));
                         GetArg(szCurrentArg, szInput, uiArgNum);
                         break;
                     }
@@ -3589,11 +3589,11 @@ void HandleOurCmd(unsigned char ucCmdUsed, char* szInput)
             {
                 if (bUsingY)
                 {
-                    MOVETO->Activate((float)atof(szCurrentArg), pChSpawn->X, 0.0f);
+                    MOVETO->Activate(GetFloatFromString(szCurrentArg, 0.0f), pChSpawn->X, 0.0f);
                 }
                 else
                 {
-                    MOVETO->Activate(pChSpawn->Y, (float)atof(szCurrentArg), 0.0f);
+                    MOVETO->Activate(pChSpawn->Y, GetFloatFromString(szCurrentArg, 0.0f), 0.0f);
                 }
                 GetArg(szCurrentArg, szInput, uiArgNum);
             }
@@ -3711,7 +3711,7 @@ void HandleOurCmd(unsigned char ucCmdUsed, char* szInput)
         {
             if (strstr(szCurrentArg, "%"))
             {
-                STICK->DistModP = (float)atof(szCurrentArg) / 100.0f;
+                STICK->DistModP = GetFloatFromString(szCurrentArg, 0.0f) / 100.0f;
                 // shouldnt do this here, need logic to output this only if used by itself
                 // cant do it on an 'else' for the pTarget 'if' because of 'always' param
                 sprintf_s(szMsg, "\ay%s\aw:: Stick mod changed Mod(\ag%.2f\ax) ModPercent(\ag%.2f%%\ax)", PLUGIN_NAME, STICK->DistMod, STICK->DistModP);
@@ -3721,7 +3721,7 @@ void HandleOurCmd(unsigned char ucCmdUsed, char* szInput)
             }
             else if (szCurrentArg[0] == '-')
             {
-                STICK->DistMod = (float)atof(szCurrentArg);
+                STICK->DistMod = GetFloatFromString(szCurrentArg, 0.0f);
                 sprintf_s(szMsg, "\ay%s\aw:: Stick mod changed Mod(\ag%.2f\ax) ModPercent(\ag%.2f%%\ax)", PLUGIN_NAME, STICK->DistMod, STICK->DistModP);
                 WriteLine(szMsg, V_SETTINGS);
                 if (STICK->SetDist && STICK->Dist + STICK->DistMod >= 0.0f) STICK->Dist += STICK->DistMod; // possible float math error here?
@@ -3729,7 +3729,7 @@ void HandleOurCmd(unsigned char ucCmdUsed, char* szInput)
             }
             else if (isdigit(szCurrentArg[0]) || szCurrentArg[0] == '.' )
             {
-                if ((float)atof(szCurrentArg) * STICK->DistModP + STICK->DistMod > 0.0f)
+                if (GetFloatFromString(szCurrentArg, 0.0f) * STICK->DistModP + STICK->DistMod > 0.0f)
                 {
                     STICK->Dist = fStickDistance = GetFloatFromString(szCurrentArg, 0.0f) * STICK->DistModP + STICK->DistMod;
                 }
@@ -3934,9 +3934,9 @@ void HandleOurCmd(unsigned char ucCmdUsed, char* szInput)
             else if (!_strnicmp(szCurrentArg, "backupdist", 11))
             {
                 GetArg(szCurrentArg, szInput, uiArgNum++);
-                if ((float)atof(szCurrentArg) > 1.0f)
+                if (GetFloatFromString(szCurrentArg, 0.0f) > 1.0f)
                 {
-                    STICK->DistBack = (float)atof(szCurrentArg);
+                    STICK->DistBack = GetFloatFromString(szCurrentArg, 0.0f);
                     STICK->TurnOn();
                 }
                 else
@@ -3950,9 +3950,9 @@ void HandleOurCmd(unsigned char ucCmdUsed, char* szInput)
             else if (!_strnicmp(szCurrentArg, "breakdist", 10))
             {
                 GetArg(szCurrentArg, szInput, uiArgNum++);
-                if ((float)atof(szCurrentArg) > 1.0f)
+                if (GetFloatFromString(szCurrentArg, 0.0f) > 1.0f)
                 {
-                    STICK->DistBreak = (float)atof(szCurrentArg);
+                    STICK->DistBreak = GetFloatFromString(szCurrentArg, 0.0f);
                     STICK->TurnOn();
                 }
                 else
@@ -3965,9 +3965,9 @@ void HandleOurCmd(unsigned char ucCmdUsed, char* szInput)
             else if (!_strnicmp(szCurrentArg, "snapdist", 9))
             {
                 GetArg(szCurrentArg, szInput, uiArgNum++);
-                if ((float)atof(szCurrentArg) > 1.0f)
+                if (GetFloatFromString(szCurrentArg, 0.0f) > 1.0f)
                 {
-                    STICK->DistSnap = (float)atof(szCurrentArg);
+                    STICK->DistSnap = GetFloatFromString(szCurrentArg, 0.0f);
                     STICK->TurnOn();
                 }
                 else
@@ -3981,9 +3981,9 @@ void HandleOurCmd(unsigned char ucCmdUsed, char* szInput)
             else if (!_strnicmp(szCurrentArg, "flexdist", 9))
             {
                 GetArg(szCurrentArg, szInput, uiArgNum++);
-                if ((float)atof(szCurrentArg) >= 2.0f && (float)atof(szCurrentArg) <= 20.0f)
+                if (GetFloatFromString(szCurrentArg, 0.0f) >= 2.0f && GetFloatFromString(szCurrentArg, 0.0f) <= 20.0f)
                 {
-                    STICK->DistFlex = (float)atof(szCurrentArg);
+                    STICK->DistFlex = GetFloatFromString(szCurrentArg, 0.0f);
                     STICK->TurnOn();
                 }
                 else
@@ -3997,9 +3997,9 @@ void HandleOurCmd(unsigned char ucCmdUsed, char* szInput)
             else if (!_strnicmp(szCurrentArg, "!frontarc", 10))
             {
                 GetArg(szCurrentArg, szInput, uiArgNum++);
-                if ((float)atof(szCurrentArg) > 1.0f && (float)atof(szCurrentArg) <= 260.0f)
+                if (GetFloatFromString(szCurrentArg, 0.0f) > 1.0f && GetFloatFromString(szCurrentArg, 0.0f) <= 260.0f)
                 {
-                    STICK->ArcNotFront = (float)atof(szCurrentArg);
+                    STICK->ArcNotFront = GetFloatFromString(szCurrentArg, 0.0f);
                     STICK->TurnOn();
                 }
                 else
@@ -4013,9 +4013,9 @@ void HandleOurCmd(unsigned char ucCmdUsed, char* szInput)
             else if (!_strnicmp(szCurrentArg, "behindarc", 10))
             {
                 GetArg(szCurrentArg, szInput, uiArgNum++);
-                if ((float)atof(szCurrentArg) > 1.0f && (float)atof(szCurrentArg) <= 260.0f)
+                if (GetFloatFromString(szCurrentArg, 0.0f) > 1.0f && GetFloatFromString(szCurrentArg, 0.0f) <= 260.0f)
                 {
-                    STICK->ArcBehind = (float)atof(szCurrentArg);
+                    STICK->ArcBehind = GetFloatFromString(szCurrentArg, 0.0f);
                     STICK->TurnOn();
                 }
                 else
@@ -4057,12 +4057,12 @@ void HandleOurCmd(unsigned char ucCmdUsed, char* szInput)
                 GetArg(szCurrentArg, szInput, uiArgNum++);
                 if (szCurrentArg[0] == '-')
                 {
-                    MOVETO->Mod = (float)atof(szCurrentArg);
+                    MOVETO->Mod = GetFloatFromString(szCurrentArg, 0.0f);
                     MOVETO->Dist += MOVETO->Mod;
                 }
                 else if (isdigit(szCurrentArg[0]))
                 {
-                    MOVETO->Dist = ((float)atof(szCurrentArg) >= 1.0f) ? (float)atof(szCurrentArg) : MOVETO->Dist;
+                    MOVETO->Dist = (GetFloatFromString(szCurrentArg, 0.0f) >= 1.0f) ? GetFloatFromString(szCurrentArg, 0.0f) : MOVETO->Dist;
                 }
                 else
                 {
@@ -4081,12 +4081,12 @@ void HandleOurCmd(unsigned char ucCmdUsed, char* szInput)
                 GetArg(szCurrentArg, szInput, uiArgNum++);
                 if (szCurrentArg[0] == '-')
                 {
-                    MOVETO->Mod = (float)atof(szCurrentArg);
+                    MOVETO->Mod = GetFloatFromString(szCurrentArg, 0.0f);
                     MOVETO->Dist += MOVETO->Mod;
                 }
                 else if (isdigit(szCurrentArg[0]))
                 {
-                    MOVETO->Dist = ((float)atof(szCurrentArg) >= 1.0f) ? (float)atof(szCurrentArg) : MOVETO->Dist;
+                    MOVETO->Dist = (GetFloatFromString(szCurrentArg, 0.0f) >= 1.0f) ? GetFloatFromString(szCurrentArg, 0.0f) : MOVETO->Dist;
                 }
                 else
                 {
@@ -4132,9 +4132,9 @@ void HandleOurCmd(unsigned char ucCmdUsed, char* szInput)
             else if (!_strnicmp(szCurrentArg, "backupdist", 11))
             {
                 GetArg(szCurrentArg, szInput, uiArgNum++);
-                if ((float)atof(szCurrentArg) > 1.0f)
+                if (GetFloatFromString(szCurrentArg, 0.0f) > 1.0f)
                 {
-                    MOVETO->DistBack = (float)atof(szCurrentArg);
+                    MOVETO->DistBack = GetFloatFromString(szCurrentArg, 0.0f);
                 }
                 else
                 {
@@ -4146,9 +4146,9 @@ void HandleOurCmd(unsigned char ucCmdUsed, char* szInput)
             else if (!_strnicmp(szCurrentArg, "ydist", 6))
             {
                 GetArg(szCurrentArg, szInput, uiArgNum++);
-                if ((float)atof(szCurrentArg) > 1.0f)
+                if (GetFloatFromString(szCurrentArg, 0.0f) > 1.0f)
                 {
-                    MOVETO->DistY = (float)atof(szCurrentArg);
+                    MOVETO->DistY = GetFloatFromString(szCurrentArg, 0.0f);
                 }
                 else
                 {
@@ -4160,9 +4160,9 @@ void HandleOurCmd(unsigned char ucCmdUsed, char* szInput)
             else if (!_strnicmp(szCurrentArg, "xdist", 6))
             {
                 GetArg(szCurrentArg, szInput, uiArgNum++);
-                if ((float)atof(szCurrentArg) > 1.0f)
+                if (GetFloatFromString(szCurrentArg, 0.0f) > 1.0f)
                 {
-                    MOVETO->DistX = (float)atof(szCurrentArg);
+                    MOVETO->DistX = GetFloatFromString(szCurrentArg, 0.0f);
                 }
                 else
                 {
@@ -4186,7 +4186,7 @@ void HandleOurCmd(unsigned char ucCmdUsed, char* szInput)
                 GetArg(szCurrentArg, szInput, uiArgNum++);
                 if (isdigit(szCurrentArg[0]))
                 {
-                    CURCAMP->SetLeash((float)atof(szCurrentArg));
+                    CURCAMP->SetLeash(GetFloatFromString(szCurrentArg, 0.0f));
                     CURCAMP->Leash = true;
                 }
                 else
@@ -4199,7 +4199,7 @@ void HandleOurCmd(unsigned char ucCmdUsed, char* szInput)
                 GetArg(szCurrentArg, szInput, uiArgNum++);
                 if (isdigit(szCurrentArg[0]))
                 {
-                    CURCAMP->SetRadius((float)atof(szCurrentArg));
+                    CURCAMP->SetRadius(GetFloatFromString(szCurrentArg, 0.0f));
                 }
                 else
                 {
@@ -4317,7 +4317,7 @@ void HandleOurCmd(unsigned char ucCmdUsed, char* szInput)
                 GetArg(szCurrentArg, szInput, uiArgNum++);
                 if (isdigit(szCurrentArg[0]))
                 {
-                    CURCAMP->Bearing = (float)atof(szCurrentArg);
+                    CURCAMP->Bearing = GetFloatFromString(szCurrentArg, 0.0f);
                 }
                 else
                 {
@@ -4330,9 +4330,9 @@ void HandleOurCmd(unsigned char ucCmdUsed, char* szInput)
             else if (!_strnicmp(szCurrentArg, "scatsize", 9))
             {
                 GetArg(szCurrentArg, szInput, uiArgNum++);
-                if ((float)atof(szCurrentArg) > 1.0f)
+                if (GetFloatFromString(szCurrentArg, 0.0f) > 1.0f)
                 {
-                    CURCAMP->ScatSize = (float)atof(szCurrentArg);
+                    CURCAMP->ScatSize = GetFloatFromString(szCurrentArg, 0.0f);
                 }
                 else
                 {
@@ -4345,9 +4345,9 @@ void HandleOurCmd(unsigned char ucCmdUsed, char* szInput)
             else if (!_strnicmp(szCurrentArg, "scatdist", 9))
             {
                 GetArg(szCurrentArg, szInput, uiArgNum++);
-                if ((float)atof(szCurrentArg) > 1.0f)
+                if (GetFloatFromString(szCurrentArg, 0.0f) > 1.0f)
                 {
-                    CURCAMP->ScatDist = (float)atof(szCurrentArg);
+                    CURCAMP->ScatDist = GetFloatFromString(szCurrentArg, 0.0f);
                 }
                 else
                 {
@@ -4392,7 +4392,7 @@ void HandleOurCmd(unsigned char ucCmdUsed, char* szInput)
                 GetArg(szCurrentArg, szInput, uiArgNum++);
                 if (isdigit(szCurrentArg[0]))
                 {
-                    CIRCLE->SetRadius((float)atof(szCurrentArg));
+                    CIRCLE->SetRadius(GetFloatFromString(szCurrentArg, 0.0f));
                     GetArg(szCurrentArg, szInput, uiArgNum);
                 }
                 else
@@ -5269,7 +5269,7 @@ void ChangeSetting(unsigned char ucCmdUsed, bool bToggle, char szSetting[MAX_STR
     }
     else if (!bCustomMsg && bSetDigit)
     {
-        float fDigit = (float)atof(szSetDigit);
+        float fDigit = GetFloatFromString(szSetDigit, 0.0f);
         if (!_strnicmp(szParameter, "pulsecheck", 11))
         {
             STUCK->Check = (unsigned int)fDigit > 1 ? (unsigned int)fDigit : STUCK->Check;
@@ -7084,9 +7084,9 @@ void LoadConfig()
 
     // default settings
     GetPrivateProfileString("Defaults", "AllowMove",       ftoa_s(SET->AllowMove, szTempF),   szTemp, MAX_STRING, INIFileName);
-    if ((float)atof(szTemp) >= 10.0f)
+    if (GetFloatFromString(szTemp, 0.0f) >= 10.0f)
     {
-        SET->AllowMove = (float)atof(szTemp);
+        SET->AllowMove = GetFloatFromString(szTemp, 0.0f);
     }
     else
     {
@@ -7107,9 +7107,9 @@ void LoadConfig()
     GetPrivateProfileString("Defaults", "BreakOnSummon",   SET->BreakSummon ? "on" : "off", szTemp, MAX_STRING, INIFileName);
     SET->BreakSummon = (!_strnicmp(szTemp, "on", 3));
     GetPrivateProfileString("Defaults", "DistSummon",      ftoa_s(SET->DistSummon, szTempF),  szTemp, MAX_STRING, INIFileName);
-    if ((float)atof(szTemp) >= 2.0f)
+    if (GetFloatFromString(szTemp, 0.0f) >= 2.0f)
     {
-        SET->DistSummon = (float)atof(szTemp);
+        SET->DistSummon = GetFloatFromString(szTemp, 0.0f);
     }
     else
     {
@@ -7140,9 +7140,9 @@ void LoadConfig()
     GetPrivateProfileString("Defaults", "SaveByChar",      SET->SaveByChar  ? "on" : "off", szTemp, MAX_STRING, INIFileName);
     SET->SaveByChar = (!_strnicmp(szTemp, "on", 3));
     GetPrivateProfileString("Defaults", "TurnRate",        ftoa_s(SET->TurnRate, szTempF),    szTemp, MAX_STRING, INIFileName);
-    if ((float)atof(szTemp) >= 1.0f && (float)atof(szTemp) <= 100.0f)
+    if (GetFloatFromString(szTemp, 0.0f) >= 1.0f && GetFloatFromString(szTemp, 0.0f) <= 100.0f)
     {
-        SET->TurnRate = (float)atof(szTemp);
+        SET->TurnRate = GetFloatFromString(szTemp, 0.0f);
     }
     else
     {
@@ -7208,18 +7208,18 @@ void LoadConfig()
     GetPrivateProfileString("Stick",    "AlwaysUW",        SET_S->UW        ? "on" : "off",   szTemp, MAX_STRING, INIFileName);
     SET_S->UW = (!_strnicmp(szTemp, "on", 3));
     GetPrivateProfileString("Stick",    "ArcBehind",       ftoa_s(SET_S->ArcBehind, szTempF),   szTemp, MAX_STRING, INIFileName);
-    if ((float)atof(szTemp) > 5.0f && (float)atof(szTemp) < 260.0f)
+    if (GetFloatFromString(szTemp, 0.0f) > 5.0f && GetFloatFromString(szTemp, 0.0f) < 260.0f)
     {
-        SET_S->ArcBehind = (float)atof(szTemp);
+        SET_S->ArcBehind = GetFloatFromString(szTemp, 0.0f);
     }
     else
     {
         bRewriteIni = true;
     }
     GetPrivateProfileString("Stick",    "ArcNotFront",     ftoa_s(SET_S->ArcNotFront, szTempF), szTemp, MAX_STRING, INIFileName);
-    if ((float)atof(szTemp) > 5.0f && (float)atof(szTemp) < 260.0f)
+    if (GetFloatFromString(szTemp, 0.0f) > 5.0f && GetFloatFromString(szTemp, 0.0f) < 260.0f)
     {
-        SET_S->ArcNotFront = (float)atof(szTemp);
+        SET_S->ArcNotFront = GetFloatFromString(szTemp, 0.0f);
     }
     else
     {
@@ -7242,54 +7242,54 @@ void LoadConfig()
     GetPrivateProfileString("Stick",    "DelayStrafe",     SET_S->DelayStrafe ? "on" : "off", szTemp, MAX_STRING, INIFileName);
     SET_S->DelayStrafe = (!_strnicmp(szTemp, "on", 3));
     GetPrivateProfileString("Stick",    "DistBackup",      ftoa_s(SET_S->DistBack, szTempF),    szTemp, MAX_STRING, INIFileName);
-    if ((float)atof(szTemp) >= 1.0f)
+    if (GetFloatFromString(szTemp, 0.0f) >= 1.0f)
     {
-        SET_S->DistBack = (float)atof(szTemp);
+        SET_S->DistBack = GetFloatFromString(szTemp, 0.0f);
     }
     else
     {
         bRewriteIni = true;
     }
     GetPrivateProfileString("Stick",    "DistBreak",       ftoa_s(SET_S->DistBreak, szTempF),   szTemp, MAX_STRING, INIFileName);
-    if ((float)atof(szTemp) >= 1.0f)
+    if (GetFloatFromString(szTemp, 0.0f) >= 1.0f)
     {
-        SET_S->DistBreak = (float)atof(szTemp);
+        SET_S->DistBreak = GetFloatFromString(szTemp, 0.0f);
     }
     else
     {
         bRewriteIni = true;
     }
     GetPrivateProfileString("Stick",    "DistFlex",        ftoa_s(SET_S->DistFlex,  szTempF),   szTemp, MAX_STRING, INIFileName);
-    if ((float)atof(szTemp) >= 2.0f && (float)atof(szTemp) <= 20.0f)
+    if (GetFloatFromString(szTemp, 0.0f) >= 2.0f && GetFloatFromString(szTemp, 0.0f) <= 20.0f)
     {
-        SET_S->DistFlex = (float)atof(szTemp);
+        SET_S->DistFlex = GetFloatFromString(szTemp, 0.0f);
     }
     else
     {
         bRewriteIni = true;
     }
     GetPrivateProfileString("Stick",    "DistMod",         ftoa_s(SET_S->DistMod, szTempF),     szTemp, MAX_STRING, INIFileName);
-    if ((float)atof(szTemp) >= 0.0f)
+    if (GetFloatFromString(szTemp, 0.0f) >= 0.0f)
     {
-        SET_S->DistMod = (float)atof(szTemp);
+        SET_S->DistMod = GetFloatFromString(szTemp, 0.0f);
     }
     else
     {
         bRewriteIni = true;
     }
     GetPrivateProfileString("Stick",    "DistMod%",        ftoa_s(SET_S->DistModP, szTempF),    szTemp, MAX_STRING, INIFileName);
-    if ((float)atof(szTemp) >= 0.0f)
+    if (GetFloatFromString(szTemp, 0.0f) >= 0.0f)
     {
-        SET_S->DistModP = (float)atof(szTemp);
+        SET_S->DistModP = GetFloatFromString(szTemp, 0.0f);
     }
     else
     {
         bRewriteIni = true;
     }
     GetPrivateProfileString("Stick",    "DistSnaproll",    ftoa_s(SET_S->DistSnap, szTempF),    szTemp, MAX_STRING, INIFileName);
-    if ((float)atof(szTemp) >= 1.0f)
+    if (GetFloatFromString(szTemp, 0.0f) >= 1.0f)
     {
-        SET_S->DistSnap = (float)atof(szTemp);
+        SET_S->DistSnap = GetFloatFromString(szTemp, 0.0f);
     }
     else
     {
@@ -7311,9 +7311,9 @@ void LoadConfig()
 
     // makecamp settings
     GetPrivateProfileString("MakeCamp", "CampRadius",      ftoa_s(SET_CAMP->Radius, szTempF),   szTemp, MAX_STRING, INIFileName);
-    if ((float)atof(szTemp) >= 5.0f)
+    if (GetFloatFromString(szTemp, 0.0f) >= 5.0f)
     {
-        SET_CAMP->SetRadius((float)atof(szTemp));
+        SET_CAMP->SetRadius(GetFloatFromString(szTemp, 0.0f));
     }
     else
     {
@@ -7332,9 +7332,9 @@ void LoadConfig()
     GetPrivateProfileString("MakeCamp", "UseLeash",         SET_CAMP->Leash      ? "on" : "off", szTemp, MAX_STRING, INIFileName);
     SET_CAMP->Leash = (!_strnicmp(szTemp, "on", 3));
     GetPrivateProfileString("MakeCamp", "LeashLength",      ftoa_s(SET_CAMP->Length, szTempF),     szTemp, MAX_STRING, INIFileName);
-    if ((float)atof(szTemp) >= SET_CAMP->Radius)
+    if (GetFloatFromString(szTemp, 0.0f) >= SET_CAMP->Radius)
     {
-        SET_CAMP->SetLeash((float)atof(szTemp));
+        SET_CAMP->SetLeash(GetFloatFromString(szTemp, 0.0f));
     }
     else
     {
@@ -7344,20 +7344,20 @@ void LoadConfig()
     GetPrivateProfileString("MakeCamp", "UseScatter",       SET_CAMP->Scatter    ? "on" : "off", szTemp, MAX_STRING, INIFileName);
     SET_CAMP->Scatter = (!_strnicmp(szTemp, "on", 3));
     GetPrivateProfileString("MakeCamp", "Bearing",          ftoa_s(SET_CAMP->Bearing, szTempF),    szTemp, MAX_STRING, INIFileName);
-    SET_CAMP->Bearing = (float)atof(szTemp);
+    SET_CAMP->Bearing = GetFloatFromString(szTemp, 0.0f);
     GetPrivateProfileString("MakeCamp", "ScatDist",         ftoa_s(SET_CAMP->ScatDist, szTempF),   szTemp, MAX_STRING, INIFileName);
-    if ((float)atof(szTemp) >= 1.0f)
+    if (GetFloatFromString(szTemp, 0.0f) >= 1.0f)
     {
-        SET_CAMP->ScatDist = (float)atof(szTemp);
+        SET_CAMP->ScatDist = GetFloatFromString(szTemp, 0.0f);
     }
     else
     {
         bRewriteIni = true;
     }
     GetPrivateProfileString("MakeCamp", "ScatSize",         ftoa_s(SET_CAMP->ScatSize, szTempF),   szTemp, MAX_STRING, INIFileName);
-    if ((float)atof(szTemp) >= 1.0f)
+    if (GetFloatFromString(szTemp, 0.0f) >= 1.0f)
     {
-        SET_CAMP->ScatSize = (float)atof(szTemp);
+        SET_CAMP->ScatSize = GetFloatFromString(szTemp, 0.0f);
     }
     else
     {
@@ -7368,27 +7368,27 @@ void LoadConfig()
     GetPrivateProfileString("MoveTo",   "AlwaysUW",         SET_M->UW            ? "on" : "off", szTemp, MAX_STRING, INIFileName);
     SET_M->UW = (!_strnicmp(szTemp, "on", 3));
     GetPrivateProfileString("MoveTo",   "ArrivalDist",      ftoa_s(SET_M->Dist, szTempF),          szTemp, MAX_STRING, INIFileName);
-    if ((float)atof(szTemp) >= 1.0f)
+    if (GetFloatFromString(szTemp, 0.0f) >= 1.0f)
     {
-        SET_M->Dist = (float)atof(szTemp);
+        SET_M->Dist = GetFloatFromString(szTemp, 0.0f);
     }
     else
     {
         bRewriteIni = true;
     }
     GetPrivateProfileString("MoveTo",   "ArrivalDistX",     ftoa_s(SET_M->DistX, szTempF),         szTemp, MAX_STRING, INIFileName);
-    if ((float)atof(szTemp) >= 1.0f)
+    if (GetFloatFromString(szTemp, 0.0f) >= 1.0f)
     {
-        SET_M->DistX = (float)atof(szTemp);
+        SET_M->DistX = GetFloatFromString(szTemp, 0.0f);
     }
     else
     {
         bRewriteIni = true;
     }
     GetPrivateProfileString("MoveTo",   "ArrivalDistY",     ftoa_s(MOVETO->DistY, szTempF),        szTemp, MAX_STRING, INIFileName);
-    if ((float)atof(szTemp) >= 1.0f)
+    if (GetFloatFromString(szTemp, 0.0f) >= 1.0f)
     {
-        SET_M->DistY = (float)atof(szTemp);
+        SET_M->DistY = GetFloatFromString(szTemp, 0.0f);
     }
     else
     {
@@ -7399,18 +7399,18 @@ void LoadConfig()
     GetPrivateProfileString("MoveTo",   "BreakOnHit",       SET_M->BreakHit      ? "on" : "off", szTemp, MAX_STRING, INIFileName);
     SET_M->BreakHit = (!_strnicmp(szTemp, "on", 3));
     GetPrivateProfileString("MoveTo",   "DistBackup",      ftoa_s(SET_M->DistBack, szTempF),       szTemp, MAX_STRING, INIFileName);
-    if ((float)atof(szTemp) >= 1.0f)
+    if (GetFloatFromString(szTemp, 0.0f) >= 1.0f)
     {
-        SET_M->DistBack = (float)atof(szTemp);
+        SET_M->DistBack = GetFloatFromString(szTemp, 0.0f);
     }
     else
     {
         bRewriteIni = true;
     }
     GetPrivateProfileString("MoveTo",   "MoveToMod",        ftoa_s(SET_M->Mod, szTempF),           szTemp, MAX_STRING, INIFileName);
-    if ((float)atof(szTemp) >= 0.0f)
+    if (GetFloatFromString(szTemp, 0.0f) >= 0.0f)
     {
-        SET_M->Mod = (float)atof(szTemp);
+        SET_M->Mod = GetFloatFromString(szTemp, 0.0f);
     }
     else
     {
@@ -7429,9 +7429,9 @@ void LoadConfig()
     GetPrivateProfileString("Circle",   "Drunken",          SET_C->Drunk         ? "on" : "off", szTemp, MAX_STRING, INIFileName);
     SET_C->Drunk = (!_strnicmp(szTemp, "on", 3));
     GetPrivateProfileString("Circle",   "RadiusSize",       ftoa_s(SET_C->Radius, szTempF),        szTemp, MAX_STRING, INIFileName);
-    if ((float)atof(szTemp) >= 5.0f)
+    if (GetFloatFromString(szTemp, 0.0f) >= 5.0f)
     {
-        SET_C->SetRadius((float)atof(szTemp));
+        SET_C->SetRadius(GetFloatFromString(szTemp, 0.0f));
     }
     else
     {
@@ -7442,7 +7442,7 @@ void LoadConfig()
     GetPrivateProfileString("StuckLogic", "StuckLogic",     STUCK->On            ? "on" : "off", szTemp, MAX_STRING, INIFileName);
     STUCK->On = (!_strnicmp(szTemp, "on", 3));
     GetPrivateProfileString("StuckLogic", "DistStuck",      ftoa_s(STUCK->Dist, szTempF),          szTemp, MAX_STRING, INIFileName);
-    float diststuck = (float)atof(szTemp);
+    float diststuck = GetFloatFromString(szTemp, 0.0f);
     if (diststuck > 0.0f)
     {
         STUCK->Dist = (float)diststuck;
@@ -7482,27 +7482,27 @@ void LoadConfig()
     {
         // Character specific
         GetPrivateProfileString(szCharName, "AllowMove",    ftoa_s(SET->AllowMove, szTempF),       szTemp, MAX_STRING, INIFileName);
-        if ((float)atof(szTemp) > 10.0f)
+        if (GetFloatFromString(szTemp, 0.0f) > 10.0f)
         {
-            SET->AllowMove = (float)atof(szTemp);
+            SET->AllowMove = GetFloatFromString(szTemp, 0.0f);
         }
         else
         {
             bRewriteIni = true;
         }
         GetPrivateProfileString(szCharName, "ArcBehind",    ftoa_s(SET_S->ArcBehind, szTempF),     szTemp, MAX_STRING, INIFileName);
-        if ((float)atof(szTemp) > 5.0f && (float)atof(szTemp) < 260.0f)
+        if (GetFloatFromString(szTemp, 0.0f) > 5.0f && GetFloatFromString(szTemp, 0.0f) < 260.0f)
         {
-            SET_S->ArcBehind = (float)atof(szTemp);
+            SET_S->ArcBehind = GetFloatFromString(szTemp, 0.0f);
         }
         else
         {
             bRewriteIni = true;
         }
         GetPrivateProfileString(szCharName, "ArcNotFront",  ftoa_s(SET_S->ArcNotFront, szTempF),   szTemp, MAX_STRING, INIFileName);
-        if ((float)atof(szTemp) > 5.0f && (float)atof(szTemp) < 260.0f)
+        if (GetFloatFromString(szTemp, 0.0f) > 5.0f && GetFloatFromString(szTemp, 0.0f) < 260.0f)
         {
-            SET_S->ArcNotFront = (float)atof(szTemp);
+            SET_S->ArcNotFront = GetFloatFromString(szTemp, 0.0f);
         }
         else
         {
@@ -7523,18 +7523,18 @@ void LoadConfig()
         GetPrivateProfileString(szCharName, "LockPause",    SET->LockPause       ? "on" : "off", szTemp, MAX_STRING, INIFileName);
         SET->LockPause = (!_strnicmp(szTemp, "on", 3));
         GetPrivateProfileString(szCharName, "DistBreak",    ftoa_s(STICK->DistBreak, szTempF),     szTemp, MAX_STRING, INIFileName);
-        if ((float)atof(szTemp) >= 1.0f)
+        if (GetFloatFromString(szTemp, 0.0f) >= 1.0f)
         {
-            STICK->DistBreak = (float)atof(szTemp);
+            STICK->DistBreak = GetFloatFromString(szTemp, 0.0f);
         }
         else
         {
             bRewriteIni = true;
         }
         GetPrivateProfileString(szCharName, "DistSnaproll", ftoa_s(SET_S->DistSnap, szTempF),      szTemp, MAX_STRING, INIFileName);
-        if ((float)atof(szTemp) >= 1.0f)
+        if (GetFloatFromString(szTemp, 0.0f) >= 1.0f)
         {
-            SET_S->DistSnap = (float)atof(szTemp);
+            SET_S->DistSnap = GetFloatFromString(szTemp, 0.0f);
         }
         else
         {
@@ -7553,9 +7553,9 @@ void LoadConfig()
             SET->Head = H_LOOSE;
         }
         GetPrivateProfileString(szCharName, "LeashLength",  ftoa_s(SET_CAMP->Length, szTempF),      szTemp, MAX_STRING, INIFileName);
-        if ((float)atof(szTemp) >= SET_CAMP->Radius)
+        if (GetFloatFromString(szTemp, 0.0f) >= SET_CAMP->Radius)
         {
-            SET_CAMP->SetLeash((float)atof(szTemp));
+            SET_CAMP->SetLeash(GetFloatFromString(szTemp, 0.0f));
         }
         else
         {
@@ -7590,9 +7590,9 @@ void LoadConfig()
         uiVerbLevel = GetPrivateProfileInt(szCharName, "VerbosityFlags", uiVerbLevel, INIFileName);
 
         GetPrivateProfileString(szCharName, "CampRadius",   ftoa_s(SET_CAMP->Radius, szTempF),     szTemp, MAX_STRING, INIFileName);
-        if ((float)atof(szTemp) >= 5.0f)
+        if (GetFloatFromString(szTemp, 0.0f) >= 5.0f)
         {
-            SET_CAMP->SetRadius((float)atof(szTemp));
+            SET_CAMP->SetRadius(GetFloatFromString(szTemp, 0.0f));
         }
         else
         {
@@ -7604,20 +7604,20 @@ void LoadConfig()
         GetPrivateProfileString(szCharName, "UseScatter",     SET_CAMP->Scatter  ? "on" : "off", szTemp, MAX_STRING, INIFileName);
         SET_CAMP->Scatter = (!_strnicmp(szTemp, "on", 3));
         GetPrivateProfileString(szCharName, "Bearing",        ftoa_s(SET_CAMP->Bearing, szTempF),  szTemp, MAX_STRING, INIFileName);
-        SET_CAMP->Bearing = (float)atof(szTemp);
+        SET_CAMP->Bearing = GetFloatFromString(szTemp, 0.0f);
         GetPrivateProfileString(szCharName, "ScatDist",       ftoa_s(SET_CAMP->ScatDist, szTempF), szTemp, MAX_STRING, INIFileName);
-        if ((float)atof(szTemp) >= 1.0f)
+        if (GetFloatFromString(szTemp, 0.0f) >= 1.0f)
         {
-            SET_CAMP->ScatDist = (float)atof(szTemp);
+            SET_CAMP->ScatDist = GetFloatFromString(szTemp, 0.0f);
         }
         else
         {
             bRewriteIni = true;
         }
         GetPrivateProfileString(szCharName, "ScatSize",      ftoa_s(SET_CAMP->ScatSize, szTempF),  szTemp, MAX_STRING, INIFileName);
-        if ((float)atof(szTemp) >= 1.0f)
+        if (GetFloatFromString(szTemp, 0.0f) >= 1.0f)
         {
-            SET_CAMP->ScatSize = (float)atof(szTemp);
+            SET_CAMP->ScatSize = GetFloatFromString(szTemp, 0.0f);
         }
         else
         {
