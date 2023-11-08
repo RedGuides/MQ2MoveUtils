@@ -2488,7 +2488,7 @@ public:
             if (PSPAWNINFO psTarget = (PSPAWNINFO)(STICK->Hold ? GetSpawnByID(STICK->HoldID) : pTarget))
             {
                 PSPAWNINFO pChSpawn = (PSPAWNINFO)pCharSpawn;
-                Dest.DWord = (fabs(GetDistance(pChSpawn, psTarget)) <= ((STICK->Dist > 0.0f ? STICK->Dist : (psTarget->StandState ? get_melee_range(pLocalPlayer, (PlayerClient*)psTarget) : 15.0f)) * STICK->DistModP + STICK->DistMod) && fabs(MOVE->AngDist(psTarget->Heading, pChSpawn->Heading)) <= STICK->ArcBehind) ? true : false;
+                Dest.DWord = (fabs(GetDistance(pChSpawn, psTarget)) <= ((STICK->Dist > 0.0f ? STICK->Dist : (psTarget->StandState ? get_melee_range(pLocalPlayer, psTarget) : 15.0f)) * STICK->DistModP + STICK->DistMod) && fabs(MOVE->AngDist(psTarget->Heading, pChSpawn->Heading)) <= STICK->ArcBehind) ? true : false;
             }
             Dest.Type = mq::datatypes::pBoolType;
             return true;
@@ -4594,7 +4594,7 @@ void CalcOurAngle(PSPAWNINFO pLPlayer, char* szLine)
     float fAngle   = MOVE->AngDist(psTarget->Heading, pChSpawn->Heading);
     float fReqHead = MOVE->SaneHead(atan2(psTarget->X - pChSpawn->X, psTarget->Y - pChSpawn->Y) * HEADING_HALF / (float)PI);
     fReqHead = pChSpawn->Heading - fReqHead;
-    float fMeleeRng = get_melee_range(pLocalPlayer, (PlayerClient*)psTarget);
+    float fMeleeRng = get_melee_range(pLocalPlayer, psTarget);
     float fStickRng = fMeleeRng * STICK->DistModP + STICK->DistMod;
     float fSaneH = MOVE->SaneHead(fReqHead);
     float fDist   = GetDistance(pChSpawn, psTarget);
