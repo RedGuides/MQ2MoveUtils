@@ -7850,7 +7850,7 @@ unsigned int __stdcall MQ2DataVariableLookup(char * VarName, char * Value,size_t
 {
 	strcpy_s(Value, ValueLen, VarName);
 	if (PCHARINFO pChar = GetCharInfo()) {
-		return (unsigned int)strlen(ParseMacroParameter(pChar->pSpawn, Value, ValueLen));
+		return (unsigned int)strlen(ParseMacroParameter(Value, ValueLen));
 	}
 	return (unsigned int)strlen(Value);
 }
@@ -7949,7 +7949,7 @@ unsigned int __stdcall MQ2DataVariableLookup2(char * VarName, char * Value,size_
 {
 	strcpy_s(Value, ValueLen, VarName);
 	if (PCHARINFO pChar = GetCharInfo()) {
-		return (unsigned int)strlen(ParseMacroParameter(pChar->pSpawn, Value, ValueLen));
+		return (unsigned int)strlen(ParseMacroParameter(Value, ValueLen));
 	}
 	return (unsigned int)strlen(Value);
 }
