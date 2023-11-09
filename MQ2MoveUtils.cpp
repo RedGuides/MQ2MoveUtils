@@ -6912,9 +6912,9 @@ void DebugToINI(unsigned char ucCmdUsed)
 	WritePrivateProfileFloat( "MakeCamp",      "CURCAMP->Bearing",      CURCAMP->Bearing,                           szDebugName);
     WritePrivateProfileFloat( "MakeCamp",      "CURCAMP->ScatSize",     CURCAMP->ScatSize,                          szDebugName);
     WritePrivateProfileFloat( "MakeCamp",      "CURCAMP->ScatDist",     CURCAMP->ScatDist,                          szDebugName);
-    WritePrivateProfileString("MakeCamp",      "CURCAMP->NoAggro",    CURCAMP->NoAggro    ? "true" : "false",   szDebugName);
-    WritePrivateProfileString("MakeCamp",      "CURCAMP->HaveTarget", CURCAMP->HaveTarget ? "true" : "false",   szDebugName);
-    WritePrivateProfileString("MakeCamp",      "CURCAMP->NotLoot",    CURCAMP->NotLoot    ? "true" : "false",   szDebugName);
+    WritePrivateProfileString("MakeCamp",      "CURCAMP->NoAggro",      CURCAMP->NoAggro      ? "true" : "false",   szDebugName);
+    WritePrivateProfileString("MakeCamp",      "CURCAMP->HaveTarget",   CURCAMP->HaveTarget   ? "true" : "false",   szDebugName);
+    WritePrivateProfileString("MakeCamp",      "CURCAMP->NotLoot",      CURCAMP->NotLoot      ? "true" : "false",   szDebugName);
     WritePrivateProfileString("MoveTo",        "MOVETO->On",            MOVETO->On            ? "true" : "false",   szDebugName);
     WritePrivateProfileString("MoveTo",        "MOVETO->Y",             ftoa_s(MOVETO->Y,                szTemp),     szDebugName);
     WritePrivateProfileString("MoveTo",        "MOVETO->X",             ftoa_s(MOVETO->X,                szTemp),     szDebugName);
