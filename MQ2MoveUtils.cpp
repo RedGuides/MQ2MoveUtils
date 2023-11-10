@@ -6391,7 +6391,7 @@ void MainProcess(unsigned char ucCmdUsed)
 // ----------------------------------------
 // Begin Window Output
 
-void WriteLine(char szOutput[MAX_STRING], VERBLEVEL V_COMPARE)
+void WriteLine(char* szOutput, VERBLEVEL V_COMPARE)
 {
     // never write out if total silence is set
     if (uiVerbLevel == V_SILENCE) return;
