@@ -3166,12 +3166,6 @@ inline bool ValidIngame(bool bCheckDead)
     return true;
 }
 
-template <unsigned int _Size>char* ftoa_s(float fNum, char(&szText)[_Size])
-{
-    sprintf_s(szText, "%.2f", fNum);
-    return szText;
-}
-
 // ----------------------------------------
 // Begin user command handling
 
