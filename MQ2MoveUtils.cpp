@@ -7067,7 +7067,7 @@ void SaveConfig()
         WritePrivateProfileString(szCharName,   "UseWindow",          SET->Window                                            ? "on" : "off",                                        INIFileName);
         WritePrivateProfileString(szCharName,   "Verbosity",          (uiVerbLevel & V_VERBOSITY)     == V_VERBOSITY         ? "on" : "off",                                        INIFileName);
         WritePrivateProfileString(szCharName,   "FullVerbosity",      (uiVerbLevel & V_FULLVERBOSITY) == V_FULLVERBOSITY     ? "on" : "off",                                        INIFileName);
-        WritePrivateProfileString(szCharName,   "VerbosityFlags",     SafeItoa(uiVerbLevel,             szTemp, 10),                                                                INIFileName);
+		WritePrivateProfileInt(   szCharName,   "VerbosityFlags",     static_cast<int>(uiVerbLevel),                                                                                INIFileName);
 		WritePrivateProfileFloat( szCharName,   "CampRadius",         SET_CAMP->Radius,                                                                                             INIFileName);
         WritePrivateProfileString(szCharName,   "RealtimePlayer",     SET_CAMP->Realtime                                     ? "on" : "off",                                        INIFileName);
         // scatter values
