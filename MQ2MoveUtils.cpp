@@ -340,14 +340,6 @@ public:
         return false;
     };
 };
-template <unsigned int _Size>LPSTR SafeItoa(int _Value,char(&_Buffer)[_Size], int _Radix)
-{
-	errno_t err = _itoa_s(_Value, _Buffer, _Radix);
-	if (!err) {
-		return _Buffer;
-	}
-	return "";
-}
 // ----------------------------------------------------------
 // configuration classes - store default & INI-saved settings
 
