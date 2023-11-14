@@ -18,6 +18,7 @@ as required by the copyright holders of these functions, and desired by the deve
 #include <cmath>
 
 constexpr auto PLUGIN_NAME = "MQ2MoveUtils";
+constexpr float fPI = 3.1415926535;
 PLUGIN_VERSION(12.5);
 
 PreSetup(PLUGIN_NAME);
@@ -629,8 +630,8 @@ public:
     {
         // HandleOurCmd calls this to establish '/circle on' without loc supplied
         PlayerClient* pChSpawn = pCharSpawn;
-        Y = pChSpawn->Y + Radius * sin(pChSpawn->Heading * static_cast<float>(PI) / HEADING_HALF);
-        X = pChSpawn->X + Radius * cos(pChSpawn->Heading * static_cast<float>(PI) / HEADING_HALF);
+        Y = pChSpawn->Y + Radius * sin(pChSpawn->Heading * fPI / HEADING_HALF);
+        X = pChSpawn->X + Radius * cos(pChSpawn->Heading * fPI / HEADING_HALF);
         On = true;
     };
 
@@ -4594,7 +4595,7 @@ void CalcOurAngle(PlayerClient* pLPlayer, char* szLine)
     PlayerClient* psTarget = pTarget;
     PlayerClient* pChSpawn = pCharSpawn;
     float fAngle   = MOVE->AngDist(psTarget->Heading, pChSpawn->Heading);
-    float fReqHead = MOVE->SaneHead(atan2(psTarget->X - pChSpawn->X, psTarget->Y - pChSpawn->Y) * HEADING_HALF / static_cast<float>(PI));
+    float fReqHead = MOVE->SaneHead(atan2(psTarget->X - pChSpawn->X, psTarget->Y - pChSpawn->Y) * HEADING_HALF / fPI);
     fReqHead = pChSpawn->Heading - fReqHead;
     float fMeleeRng = get_melee_range(pLocalPlayer, psTarget);
     float fStickRng = fMeleeRng * STICK->DistModP + STICK->DistMod;
@@ -5802,7 +5803,7 @@ void MainProcess(unsigned char ucCmdUsed)
                 }
                 if (psTarget && (CURCAMP->RedoStick || CURCAMP->RedoCircle))
                 {
-                    fNewHeading = MOVE->SaneHead((atan2(HeadBack.Y - pChSpawn->Y, HeadBack.X - pChSpawn->X) * HEADING_HALF / static_cast<float>(PI)));
+                    fNewHeading = MOVE->SaneHead((atan2(HeadBack.Y - pChSpawn->Y, HeadBack.X - pChSpawn->X) * HEADING_HALF / fPI));
                     MOVE->TryMove(GO_FORWARD, MU_WALKOFF, fNewHeading, HeadBack.Y, HeadBack.X);
                 }
             }
@@ -5974,18 +5975,18 @@ void MainProcess(unsigned char ucCmdUsed)
                     switch (ucCmdUsed)
                     {
                     case CMD_STICK:
-                        fOrigHead = MOVE->SaneHead((atan2(psTarget->X - pChSpawn->X, psTarget->Y - pChSpawn->Y) * HEADING_HALF) / static_cast<float>(PI));
+                        fOrigHead = MOVE->SaneHead((atan2(psTarget->X - pChSpawn->X, psTarget->Y - pChSpawn->Y) * HEADING_HALF) / fPI);
                         break;
                     case CMD_MOVETO:
                         if (CAMP->Returning)
                         {
-                            fOrigHead = MOVE->SaneHead((atan2(CAMP->X - pChSpawn->X, CAMP->Y - pChSpawn->Y) * HEADING_HALF) / static_cast<float>(PI));
+                            fOrigHead = MOVE->SaneHead((atan2(CAMP->X - pChSpawn->X, CAMP->Y - pChSpawn->Y) * HEADING_HALF) / fPI);
                             break;
                         }
-                        fOrigHead = MOVE->SaneHead((atan2(MOVETO->X - pChSpawn->X, MOVETO->Y - pChSpawn->Y) * HEADING_HALF) / static_cast<float>(PI));
+                        fOrigHead = MOVE->SaneHead((atan2(MOVETO->X - pChSpawn->X, MOVETO->Y - pChSpawn->Y) * HEADING_HALF) / fPI);
                         break;
                     case CMD_CIRCLE:
-                        fOrigHead = (atan2(pChSpawn->Y - CIRCLE->Y, CIRCLE->X - pChSpawn->X) * CIRCLE_HALF) / static_cast<float>(PI) * CIRCLE_QUARTER;
+                        fOrigHead = (atan2(pChSpawn->Y - CIRCLE->Y, CIRCLE->X - pChSpawn->X) * CIRCLE_HALF) / fPI * CIRCLE_QUARTER;
                         fOrigHead += CIRCLE_QUARTER * (CIRCLE->Radius / CIRCLE->CurDist);
                         fOrigHead = MOVE->SaneHead(fOrigHead *= HEADING_MAX / CIRCLE_MAX);
                     }
@@ -6036,11 +6037,11 @@ void MainProcess(unsigned char ucCmdUsed)
     switch (ucCmdUsed)
     {
     case CMD_STICK:
-        if (!STICK->Snaproll) fNewHeading = MOVE->SaneHead(atan2(psTarget->X - pChSpawn->X, psTarget->Y - pChSpawn->Y) * HEADING_HALF / static_cast<float>(PI));
+        if (!STICK->Snaproll) fNewHeading = MOVE->SaneHead(atan2(psTarget->X - pChSpawn->X, psTarget->Y - pChSpawn->Y) * HEADING_HALF / fPI);
         // jump ahead to stick handling
         break;
     case CMD_CIRCLE:
-        fNewHeading = (!CIRCLE->CCW != CIRCLE->Backward) ? (atan2(pChSpawn->Y - CIRCLE->Y, CIRCLE->X - pChSpawn->X) * CIRCLE_HALF) / static_cast<float>(PI) : (atan2(CIRCLE->Y - pChSpawn->Y, pChSpawn->X - CIRCLE->X) * CIRCLE_HALF) / (float)PI;
+        fNewHeading = (!CIRCLE->CCW != CIRCLE->Backward) ? (atan2(pChSpawn->Y - CIRCLE->Y, CIRCLE->X - pChSpawn->X) * CIRCLE_HALF) / fPI : (atan2(CIRCLE->Y - pChSpawn->Y, pChSpawn->X - CIRCLE->X) * CIRCLE_HALF) / fPI;
         CIRCLE->CCW ?  fNewHeading -= CIRCLE_QUARTER + CIRCLE_QUARTER * (CIRCLE->Radius / CIRCLE->CurDist) : fNewHeading += CIRCLE_QUARTER + CIRCLE_QUARTER * (CIRCLE->Radius / CIRCLE->CurDist);
         MOVE->NewHead(MOVE->SaneHead(fNewHeading *= HEADING_MAX / CIRCLE_MAX));
         CIRCLE->Backward ? MOVE->DoMove(GO_BACKWARD) : MOVE->DoMove(GO_FORWARD);
@@ -6057,7 +6058,7 @@ void MainProcess(unsigned char ucCmdUsed)
             }
             if (CAMP->Returning)
             {
-                fNewHeading = MOVE->SaneHead(atan2(CAMP->X - pChSpawn->X, CAMP->Y - pChSpawn->Y) * HEADING_HALF / static_cast<float>(PI));
+                fNewHeading = MOVE->SaneHead(atan2(CAMP->X - pChSpawn->X, CAMP->Y - pChSpawn->Y) * HEADING_HALF / fPI);
                 if (MOVETO->UseBack)
                 {
                     if (MOVE->ChangeHead == H_INACTIVE && MOVETO->CurDist < MOVETO->DistBack)
@@ -6074,7 +6075,7 @@ void MainProcess(unsigned char ucCmdUsed)
                 MOVE->TryMove(GO_FORWARD, (MOVETO->Walk && MOVETO->CurDist < 20.0f) ? MU_WALKON : MU_WALKOFF, fNewHeading, CAMP->Y, CAMP->X);
                 return;
             }
-            fNewHeading = MOVE->SaneHead(atan2(MOVETO->X - pChSpawn->X, MOVETO->Y - pChSpawn->Y) * HEADING_HALF / static_cast<float>(PI));
+            fNewHeading = MOVE->SaneHead(atan2(MOVETO->X - pChSpawn->X, MOVETO->Y - pChSpawn->Y) * HEADING_HALF / fPI);
             if (MOVETO->UseBack)
             {
                 if (MOVE->ChangeHead == H_INACTIVE && MOVETO->CurDist < MOVETO->DistBack)
@@ -6349,12 +6350,12 @@ void MainProcess(unsigned char ucCmdUsed)
             MOVE->StopMove(APPLY_TO_ALL);
             STICK->Snaproll      = false;
             STICK->On = bStickOn = true;
-            MOVE->NewHead(MOVE->SaneHead(atan2(psTarget->X - pChSpawn->X, psTarget->Y - pChSpawn->Y) * HEADING_HALF / static_cast<float>(PI)));
+            MOVE->NewHead(MOVE->SaneHead(atan2(psTarget->X - pChSpawn->X, psTarget->Y - pChSpawn->Y) * HEADING_HALF / fPI));
             STICK->NewSnaproll();
             return;
         }
         // determine heading to that location
-        STICK->Snap->Head = MOVE->SaneHead((atan2(STICK->Snap->X - pChSpawn->X, STICK->Snap->Y - pChSpawn->Y) * HEADING_HALF) / static_cast<float>(PI));
+        STICK->Snap->Head = MOVE->SaneHead((atan2(STICK->Snap->X - pChSpawn->X, STICK->Snap->Y - pChSpawn->Y) * HEADING_HALF) / fPI);
         MOVE->NewHead(STICK->Snap->Head);
         // start movement
         if (STICK->Snap->CurDist > 5.0f)
