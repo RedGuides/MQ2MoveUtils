@@ -3573,13 +3573,14 @@ void HandleOurCmd(unsigned char ucCmdUsed, char* szInput)
             GetArg(szCurrentArg, szInput, uiArgNum++);
             if (isdigit(szCurrentArg[0]) || szCurrentArg[0] == '-' || szCurrentArg[0] == '.' )
             {
+				float fValue = GetFloatFromString(szCurrentArg, 0.0f);
                 if (bUsingY)
                 {
-                    MOVETO->Activate(GetFloatFromString(szCurrentArg, 0.0f), pChSpawn->X, 0.0f);
+                    MOVETO->Activate(fValue, pChSpawn->X, 0.0f);
                 }
                 else
                 {
-                    MOVETO->Activate(pChSpawn->Y, GetFloatFromString(szCurrentArg, 0.0f), 0.0f);
+                    MOVETO->Activate(pChSpawn->Y, fValue, 0.0f);
                 }
                 GetArg(szCurrentArg, szInput, uiArgNum);
             }
@@ -3641,7 +3642,7 @@ void HandleOurCmd(unsigned char ucCmdUsed, char* szInput)
                     WriteLine(szMsg, V_ERRORS);
                     return;
                 }
-                pByID = GetSpawnByID((unsigned long)iValid);
+                pByID = GetSpawnByID(iValid);
                 if (pByID)
                 {
                     if (ME->IsMe(pByID))
@@ -3715,9 +3716,10 @@ void HandleOurCmd(unsigned char ucCmdUsed, char* szInput)
             }
             else if (isdigit(szCurrentArg[0]) || szCurrentArg[0] == '.' )
             {
-                if (GetFloatFromString(szCurrentArg, 0.0f) * STICK->DistModP + STICK->DistMod > 0.0f)
+				float fResult = GetFloatFromString(szCurrentArg, 0.0f) * STICK->DistModP + STICK->DistMod;
+                if (fResult > 0.0f)
                 {
-                    STICK->Dist = fStickDistance = GetFloatFromString(szCurrentArg, 0.0f) * STICK->DistModP + STICK->DistMod;
+                    STICK->Dist = fStickDistance = fResult;
                 }
                 STICK->SetDist = true;
                 STICK->TurnOn();
@@ -3920,9 +3922,10 @@ void HandleOurCmd(unsigned char ucCmdUsed, char* szInput)
             else if (!_strnicmp(szCurrentArg, "backupdist", 11))
             {
                 GetArg(szCurrentArg, szInput, uiArgNum++);
-                if (GetFloatFromString(szCurrentArg, 0.0f) > 1.0f)
+				float fValue = GetFloatFromString(szCurrentArg, 0.0f);
+                if (fValue > 1.0f)
                 {
-                    STICK->DistBack = GetFloatFromString(szCurrentArg, 0.0f);
+                    STICK->DistBack = fValue;
                     STICK->TurnOn();
                 }
                 else
@@ -3936,9 +3939,10 @@ void HandleOurCmd(unsigned char ucCmdUsed, char* szInput)
             else if (!_strnicmp(szCurrentArg, "breakdist", 10))
             {
                 GetArg(szCurrentArg, szInput, uiArgNum++);
-                if (GetFloatFromString(szCurrentArg, 0.0f) > 1.0f)
+				float fValue = GetFloatFromString(szCurrentArg, 0.0f);
+                if (fValue > 1.0f)
                 {
-                    STICK->DistBreak = GetFloatFromString(szCurrentArg, 0.0f);
+                    STICK->DistBreak = fValue;
                     STICK->TurnOn();
                 }
                 else
@@ -3951,9 +3955,10 @@ void HandleOurCmd(unsigned char ucCmdUsed, char* szInput)
             else if (!_strnicmp(szCurrentArg, "snapdist", 9))
             {
                 GetArg(szCurrentArg, szInput, uiArgNum++);
-                if (GetFloatFromString(szCurrentArg, 0.0f) > 1.0f)
+				float fValue = GetFloatFromString(szCurrentArg, 0.0f);
+                if (fValue > 1.0f)
                 {
-                    STICK->DistSnap = GetFloatFromString(szCurrentArg, 0.0f);
+                    STICK->DistSnap = fValue;
                     STICK->TurnOn();
                 }
                 else
@@ -3967,9 +3972,10 @@ void HandleOurCmd(unsigned char ucCmdUsed, char* szInput)
             else if (!_strnicmp(szCurrentArg, "flexdist", 9))
             {
                 GetArg(szCurrentArg, szInput, uiArgNum++);
-                if (GetFloatFromString(szCurrentArg, 0.0f) >= 2.0f && GetFloatFromString(szCurrentArg, 0.0f) <= 20.0f)
+				float fValue = GetFloatFromString(szCurrentArg, 0.0f);
+                if (fValue >= 2.0f && fValue <= 20.0f)
                 {
-                    STICK->DistFlex = GetFloatFromString(szCurrentArg, 0.0f);
+                    STICK->DistFlex = fValue;
                     STICK->TurnOn();
                 }
                 else
@@ -4068,14 +4074,16 @@ void HandleOurCmd(unsigned char ucCmdUsed, char* szInput)
             else if (!_strnicmp(szCurrentArg, "mdist", 6))
             {
                 GetArg(szCurrentArg, szInput, uiArgNum++);
+				float fValue = GetFloatFromString(szCurrentArg, 0.0f);
                 if (szCurrentArg[0] == '-')
                 {
-                    MOVETO->Mod = GetFloatFromString(szCurrentArg, 0.0f);
+                    MOVETO->Mod = fValue;
                     MOVETO->Dist += MOVETO->Mod;
                 }
                 else if (isdigit(szCurrentArg[0]))
                 {
-                    MOVETO->Dist = (GetFloatFromString(szCurrentArg, 0.0f) >= 1.0f) ? GetFloatFromString(szCurrentArg, 0.0f) : MOVETO->Dist;
+					float fvalue = fValue;
+                    MOVETO->Dist = (fvalue >= 1.0f) ? fvalue : MOVETO->Dist;
                 }
                 else
                 {
@@ -4121,9 +4129,10 @@ void HandleOurCmd(unsigned char ucCmdUsed, char* szInput)
             else if (!_strnicmp(szCurrentArg, "backupdist", 11))
             {
                 GetArg(szCurrentArg, szInput, uiArgNum++);
-                if (GetFloatFromString(szCurrentArg, 0.0f) > 1.0f)
+				float fValue = GetFloatFromString(szCurrentArg, 0.0f);
+                if (fValue > 1.0f)
                 {
-                    MOVETO->DistBack = GetFloatFromString(szCurrentArg, 0.0f);
+                    MOVETO->DistBack = fValue;
                 }
                 else
                 {
@@ -4135,9 +4144,10 @@ void HandleOurCmd(unsigned char ucCmdUsed, char* szInput)
             else if (!_strnicmp(szCurrentArg, "ydist", 6))
             {
                 GetArg(szCurrentArg, szInput, uiArgNum++);
-                if (GetFloatFromString(szCurrentArg, 0.0f) > 1.0f)
+				float fValue = GetFloatFromString(szCurrentArg, 0.0f);
+                if (fValue > 1.0f)
                 {
-                    MOVETO->DistY = GetFloatFromString(szCurrentArg, 0.0f);
+                    MOVETO->DistY = fValue;
                 }
                 else
                 {
@@ -4149,9 +4159,10 @@ void HandleOurCmd(unsigned char ucCmdUsed, char* szInput)
             else if (!_strnicmp(szCurrentArg, "xdist", 6))
             {
                 GetArg(szCurrentArg, szInput, uiArgNum++);
-                if (GetFloatFromString(szCurrentArg, 0.0f) > 1.0f)
+				float fValue = GetFloatFromString(szCurrentArg, 0.0f);
+                if (fValue > 1.0f)
                 {
-                    MOVETO->DistX = GetFloatFromString(szCurrentArg, 0.0f);
+                    MOVETO->DistX = fValue;
                 }
                 else
                 {
@@ -4319,9 +4330,10 @@ void HandleOurCmd(unsigned char ucCmdUsed, char* szInput)
             else if (!_strnicmp(szCurrentArg, "scatsize", 9))
             {
                 GetArg(szCurrentArg, szInput, uiArgNum++);
-                if (GetFloatFromString(szCurrentArg, 0.0f) > 1.0f)
+				float fValue = GetFloatFromString(szCurrentArg, 0.0f);
+                if (fValue > 1.0f)
                 {
-                    CURCAMP->ScatSize = GetFloatFromString(szCurrentArg, 0.0f);
+                    CURCAMP->ScatSize = fValue;
                 }
                 else
                 {
@@ -4334,9 +4346,10 @@ void HandleOurCmd(unsigned char ucCmdUsed, char* szInput)
             else if (!_strnicmp(szCurrentArg, "scatdist", 9))
             {
                 GetArg(szCurrentArg, szInput, uiArgNum++);
-                if (GetFloatFromString(szCurrentArg, 0.0f) > 1.0f)
+				float fValue = GetFloatFromString(szCurrentArg, 0.0f);
+                if (fValue > 1.0f)
                 {
-                    CURCAMP->ScatDist = GetFloatFromString(szCurrentArg, 0.0f);
+                    CURCAMP->ScatDist = fValue;
                 }
                 else
                 {
