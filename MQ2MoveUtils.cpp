@@ -7849,8 +7849,8 @@ void UndoKeybinds()
 unsigned int __stdcall MQ2DataVariableLookup(char * VarName, char * Value,size_t ValueLen)
 {
 	strcpy_s(Value, ValueLen, VarName);
-	if (PCHARINFO pChar = GetCharInfo()) {
-		return (unsigned int)strlen(ParseMacroParameter(pChar->pSpawn, Value, ValueLen));
+	if (pLocalPC) {
+		return (unsigned int)strlen(ParseMacroParameter(Value, ValueLen));
 	}
 	return (unsigned int)strlen(Value);
 }
@@ -7943,15 +7943,6 @@ PLUGIN_API void ShutdownPlugin()
     delete MOVE;
     delete pMU;
     delete SET;
-}
-
-unsigned int __stdcall MQ2DataVariableLookup2(char * VarName, char * Value,size_t ValueLen)
-{
-	strcpy_s(Value, ValueLen, VarName);
-	if (PCHARINFO pChar = GetCharInfo()) {
-		return (unsigned int)strlen(ParseMacroParameter(pChar->pSpawn, Value, ValueLen));
-	}
-	return (unsigned int)strlen(Value);
 }
 
 PLUGIN_API void SetGameState(unsigned long ulGameState)
