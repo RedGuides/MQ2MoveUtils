@@ -2017,7 +2017,7 @@ public:
     CMoveUtilsWnd(const CXStr& Template) : CCustomWnd(Template)
     {
 		OutWnd = (CStmlWnd*)GetChildItem("CW_ChatOutput");
-        OutWnd->SetClickable(1);
+        OutWnd->SetClickThrough(true);
 		SetEscapable(0);
 		OutWnd->MaxLines = 0x190;
 		AddStyle(CWS_TITLE | CWS_MINIMIZE | CWS_RESIZEBORDER);
