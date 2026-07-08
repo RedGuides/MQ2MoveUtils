@@ -2480,7 +2480,7 @@ public:
             if (PlayerClient* psTarget = (STICK->Hold ? GetSpawnByID(STICK->HoldID) : pTarget))
             {
                 PlayerClient* pChSpawn = pCharSpawn;
-                Dest.DWord = (fabs(GetDistance(pChSpawn, psTarget)) <= ((STICK->Dist > 0.0f ? STICK->Dist : (psTarget->StandState ? get_melee_range(pLocalPlayer, (PlayerClient*)psTarget) : 15.0f)) * STICK->DistModP + STICK->DistMod) && fabs(MOVE->AngDist(psTarget->Heading, pChSpawn->Heading)) <= STICK->ArcBehind) ? true : false;
+                Dest.DWord = (fabs(GetDistance2D(pChSpawn, psTarget)) <= ((STICK->Dist > 0.0f ? STICK->Dist : (psTarget->StandState ? get_melee_range(pLocalPlayer, (PlayerClient*)psTarget) : 15.0f)) * STICK->DistModP + STICK->DistMod) && fabs(MOVE->AngDist(psTarget->Heading, pChSpawn->Heading)) <= STICK->ArcBehind) ? true : false;
             }
             Dest.Type = mq::datatypes::pBoolType;
             return true;
@@ -2488,7 +2488,7 @@ public:
             Dest.DWord = false;
             if (PlayerClient* psTarget = (STICK->Hold ? GetSpawnByID(STICK->HoldID) : pTarget))
             {
-                Dest.DWord = (fabs(GetDistance(pCharSpawn, psTarget)) <= STICK->Dist) ? true : false;
+                Dest.DWord = (fabs(GetDistance2D(pCharSpawn, psTarget)) <= STICK->Dist) ? true : false;
             }
             Dest.Type = mq::datatypes::pBoolType;
             return true;
@@ -4583,8 +4583,8 @@ void CalcOurAngle(PlayerClient* pLPlayer, char* szLine)
     float fMeleeRng = get_melee_range(pLocalPlayer, psTarget);
     float fStickRng = fMeleeRng * STICK->DistModP + STICK->DistMod;
     float fSaneH = MOVE->SaneHead(fReqHead);
-    float fDist   = GetDistance(pChSpawn, psTarget);
-    float fDist3D = GetDistance3D(pChSpawn->X, pChSpawn->Y, pChSpawn->Z, psTarget->X, psTarget->Y, psTarget->Z);
+    float fDist   = GetDistance2D(pChSpawn, psTarget);
+    float fDist3D = GetDistance(pChSpawn->X, pChSpawn->Y, pChSpawn->Z, psTarget->X, psTarget->Y, psTarget->Z);
     char szTempOut[MAX_STRING] = {};
     sprintf_s(szTempOut, "\ay%s\aw:: AngularDist ( \ag%.2f\ax ) Adjust ( \ag%.2f\ax ) Sane ( \ag%.2f\ax ) Dist ( \ag%.2f\ax ) Dist3D ( \ag%.2f\ax ) Melee ( \ag%f\ax ) Stick ( \ag%f\ax)", PLUGIN_NAME, fAngle, fReqHead, fSaneH, fDist, fDist3D, fMeleeRng, fStickRng);
     WriteChatf("%s",szTempOut);
@@ -5596,7 +5596,7 @@ void MainProcess(unsigned char ucCmdUsed)
 
         // assign distance
         STICK->DifDist = STICK->CurDist;
-        STICK->CurDist = fabs(GetDistance(pChSpawn, psTarget));
+        STICK->CurDist = fabs(GetDistance2D(pChSpawn, psTarget));
 
         static bool sbSelfOutput = false;
         // if we've changed targets mid-stick or this is the first pulse, dont trigger stucklogic or breakonwarp
@@ -5855,7 +5855,7 @@ void MainProcess(unsigned char ucCmdUsed)
             }
             else
             {
-                MOVETO->CurDist = fabs(GetDistance3D(pChSpawn->Y, pChSpawn->X, pChSpawn->Z, MOVETO->Y, MOVETO->X, MOVETO->Z));
+                MOVETO->CurDist = fabs(GetDistance(pChSpawn->Y, pChSpawn->X, pChSpawn->Z, MOVETO->Y, MOVETO->X, MOVETO->Z));
             }
             MOVETO->DifDist = MOVETO->Dist;
         }
@@ -5877,7 +5877,7 @@ void MainProcess(unsigned char ucCmdUsed)
     {
         // use 3D to compare Z so stucklogic doesn't fire if we are moving more z than y/x (up/down slopes)
         // if bJumping then dont check z axis movement
-        STUCK->DifDist = (bLevitated || (sbJumping && bInJump)) ? GetDistance(pChSpawn->Y, pChSpawn->X, STUCK->Y, STUCK->X) : GetDistance3D(pChSpawn->Y, pChSpawn->X, pChSpawn->Z, STUCK->Y, STUCK->X, STUCK->Z);
+        STUCK->DifDist = (bLevitated || (sbJumping && bInJump)) ? GetDistance(pChSpawn->Y, pChSpawn->X, STUCK->Y, STUCK->X) : GetDistance(pChSpawn->Y, pChSpawn->X, pChSpawn->Z, STUCK->Y, STUCK->X, STUCK->Z);
 
         // sanity check, if we've moved more than 5 (summon, knockback, user)
         // it will throw off our readjustment, so keep the last value instead
@@ -6041,7 +6041,7 @@ void MainProcess(unsigned char ucCmdUsed)
             if (psTarget && MOVETO->UW)
             {
                 double dLookAngle = (double)atan2(psTarget->Z + psTarget->AvatarHeight * StateHeightMultiplier(psTarget->StandState) -
-                    pChSpawn->Z - pChSpawn->AvatarHeight * StateHeightMultiplier(pChSpawn->StandState), fabs(GetDistance3D(pChSpawn->Y, pChSpawn->X, pChSpawn->Z, psTarget->Y, psTarget->X, psTarget->Z))) * HEADING_HALF / (double)PI;
+                    pChSpawn->Z - pChSpawn->AvatarHeight * StateHeightMultiplier(pChSpawn->StandState), fabs(GetDistance(pChSpawn->Y, pChSpawn->X, pChSpawn->Z, psTarget->Y, psTarget->X, psTarget->Z))) * HEADING_HALF / (double)PI;
                 MOVE->NewFace(dLookAngle);
             }
             if (CAMP->Returning)
